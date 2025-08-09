@@ -10,14 +10,6 @@ export class PrismaService extends Context.Tag("PrismaService")<
   PrismaClient
 >() {}
 
-const prismaOp =
-  <A, Args extends any[]>(op: (...args: Args) => Promise<A>) =>
-  (...args: Args) =>
-    Effect.tryPromise({
-      try: () => op(...args),
-      catch: (cause) => new PrismaError({ cause }),
-    });
-
 export const PrismaLive = Layer.scoped(
   PrismaService,
   Effect.acquireRelease(
@@ -26,7 +18,10 @@ export const PrismaLive = Layer.scoped(
   ),
 );
 
-export const findUserById = (id: string) =>
-  Effect.flatMap(PrismaService, (prisma) =>
-    prismaOp(prisma.user.findUnique)({ where: { id } }),
-  );
+export const prismaOp =
+  <A, Args extends any[]>(op: (...args: Args) => Promise<A>) =>
+  (...args: Args) =>
+    Effect.tryPromise({
+      try: () => op(...args),
+      catch: (cause) => new PrismaError({ cause }),
+    });
