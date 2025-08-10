@@ -1,5 +1,7 @@
 "use client";
 import { useForm } from "react-hook-form";
+import { effectTsResolver } from "@hookform/resolvers/effect-ts";
+import { Schema } from "effect";
 import { CardWrapper } from "./card-wrapper";
 import {
   Form,
@@ -11,13 +13,26 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import Link from "next/link";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
+import { LoginSchema, loginResolver } from "@/schema/loginSchema";
 
 export const LoginForm = () => {
-  const form = useForm();
-  const onSubmit = () => {};
+  const form = useForm<LoginSchema>({
+    resolver: effectTsResolver(loginResolver),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const { errors } = form.formState;
+  console.log(errors);
+
+  const onSubmit = (data: LoginSchema) => {
+    console.log(errors);
+    console.log(data);
+  };
 
   return (
     <CardWrapper
@@ -30,26 +45,36 @@ export const LoginForm = () => {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
             control={form.control}
-            name="username"
+            name="email"
             render={({ field }) => (
-              <>
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="example@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input placeholder="******" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </>
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder="example@example.com"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input placeholder="******" type="password" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormError message="" />
           <FormSuccess message="" />
           <Button type="submit" className="w-full">
