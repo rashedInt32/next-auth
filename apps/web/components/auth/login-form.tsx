@@ -1,7 +1,6 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { effectTsResolver } from "@hookform/resolvers/effect-ts";
-import { Schema } from "effect";
 import { CardWrapper } from "./card-wrapper";
 import {
   Form,
@@ -26,12 +25,8 @@ export const LoginForm = () => {
     },
   });
 
-  const { errors } = form.formState;
-  console.log(errors);
-
   const onSubmit = (data: LoginSchema) => {
-    console.log(errors);
-    console.log(data);
+    console.log("data", data);
   };
 
   return (
