@@ -1,14 +1,37 @@
 import NextAuth from "next-auth";
+import bcrypt from "bcryptjs";
 import Credentials from "next-auth/providers/credentials";
+import { Effect } from "effect";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { PrismaLive, PrismaClient, findUserByEmail } from "@repo/db";
+
+const prisma = new PrismaClient();
 
 export default NextAuth({
+  adapter: PrismaAdapter(prisma),
   providers: [
     Credentials({
       name: "Credentials",
-      credentials: { email: {}, password: {} },
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
       authorize: async (credentials) => {
-        let user = null;
-        return user;
+        if (!credentials.email || !credentials.password) return null;
+        const email = credentials.email as string;
+        const password = credentials.password as string;
+
+        const result = await Effect.runPromise(
+          findUserByEmail(email).pipe(Effect.provide(PrismaLive)),
+        );
+
+        if (!result || !result.password) return null;
+
+        const isValid = bcrypt.compare(password, result.password);
+
+        return {
+          email: result?.email ?? undefined,
+        };
       },
     }),
   ],

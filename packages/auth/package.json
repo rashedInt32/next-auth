@@ -15,6 +15,7 @@
     "check-types": "tsc --noEmit"
   },
   "devDependencies": {
+    "@repo/db": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^22.15.3",
@@ -24,6 +25,9 @@
     "typescript": "5.8.2"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.10.0",
+    "bcryptjs": "^3.0.2",
+    "effect": "^3.17.6",
     "next-auth": "5.0.0-beta.29"
   }
 }
