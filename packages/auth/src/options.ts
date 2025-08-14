@@ -28,6 +28,7 @@ export default NextAuth({
         if (!result || !result.password) return null;
 
         const isValid = bcrypt.compare(password, result.password);
+        if (!isValid) return { error: "password did not match" };
 
         return {
           email: result?.email ?? undefined,
@@ -35,4 +36,12 @@ export default NextAuth({
       },
     }),
   ],
+  session: { strategy: "jwt" },
+  secret: process.env.AUTH_SECRET,
+  callbacks: {
+    async session({ session, token }) {
+      if (session.user) session.user.id = token.sub!;
+      return session;
+    },
+  },
 });
