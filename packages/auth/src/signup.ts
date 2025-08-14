@@ -19,5 +19,5 @@ export const registerUser = ({
 
     const passwordHash = yield* Effect.promise(() => bcrypt.hash(password, 10));
 
-    return yield* createUser({ email, name, passwordHash });
+    return yield* createUser({ email, passwordHash });
   }).pipe(Effect.provide(PrismaLive));
