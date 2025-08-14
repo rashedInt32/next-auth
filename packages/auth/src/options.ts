@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import type { NextAuthConfig } from "next-auth";
 import bcrypt from "bcryptjs";
 import Credentials from "next-auth/providers/credentials";
 import { Effect } from "effect";
@@ -7,7 +7,7 @@ import { PrismaLive, PrismaClient, findUserByEmail } from "@repo/db";
 
 const prisma = new PrismaClient();
 
-export default NextAuth({
+export const authOptions: NextAuthConfig = {
   adapter: PrismaAdapter(prisma),
   providers: [
     Credentials({
@@ -44,4 +44,4 @@ export default NextAuth({
       return session;
     },
   },
-});
+};

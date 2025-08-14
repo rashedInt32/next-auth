@@ -6,7 +6,16 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./src/index.ts"
-    }
+    },
+    "./next": {
+      "types": "./dist/next.d.ts",
+      "default": "./src/next.ts"
+    },
+    "./signup-route": {
+      "types": "./dist/signup-route.d.ts",
+      "default": "./src/signup-route.ts"
+    },
+
   },
   "scripts": {
     "dev": "tsc",
