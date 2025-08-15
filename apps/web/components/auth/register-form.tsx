@@ -15,46 +15,24 @@ import { Button } from "../ui/button";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
 import { authSchema, authResolver } from "@/schema/loginSchema";
-import { createuser, loginAction } from "@/app/auth/login/action";
-import { signIn } from "@/auth";
+import { createUserAction } from "@/app/auth/login/action";
 
-export const LoginForm = () => {
+export const RegisterFrom = () => {
   const form = useForm<authSchema>({
     resolver: effectTsResolver(authResolver),
     defaultValues: {
-      email: "admin@admin.com",
-      password: "Pwd1234!",
+      email: "",
+      password: "",
     },
   });
 
   const onSubmit = async (data: authSchema) => {
     const { email, password } = data;
-
     if (!email || !password) {
-      form.setError("root", { message: "Email and password are required." });
       return;
     }
-
-    try {
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        const errorMessage =
-          result.error === "CredentialsSignin"
-            ? "Invalid email or password."
-            : result.error || "An unexpected error occurred.";
-        form.setError("root", { message: errorMessage });
-        return;
-      }
-
-      window.location.href = "/dashboard"; // Or use Next.js router
-    } catch (error) {
-      form.setError("root", { message: "An unexpected error occurred." });
-    }
+    const user = await createUserAction(data);
+    console.log("User creation response:", user);
   };
 
   return (
@@ -99,7 +77,6 @@ export const LoginForm = () => {
           />
 
           <FormError message="" />
-          <pre>{JSON.stringify(form.formState.errors)}</pre>
           <FormSuccess message="" />
           <Button type="submit" className="w-full">
             Submit

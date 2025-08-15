@@ -10,13 +10,36 @@ export class PrismaService extends Context.Tag("PrismaService")<
   PrismaClient
 >() {}
 
-export const PrismaLive = Layer.scoped(
-  PrismaService,
-  Effect.acquireRelease(
-    Effect.sync(() => new PrismaClient()),
-    (prisma) => Effect.promise(() => prisma.$disconnect()),
-  ),
-);
+const globalPrisma = globalThis as unknown as {
+  prisma?: PrismaClient;
+};
+
+const getPrismaClient = () => {
+  if (process.env.NODE_ENV === "production") {
+    return new PrismaClient();
+  }
+  if (!globalPrisma.prisma) {
+    globalPrisma.prisma = new PrismaClient();
+  }
+  return globalPrisma.prisma;
+};
+
+export const PrismaLive =
+  process.env.NODE_ENV === "production"
+    ? Layer.scoped(
+        PrismaService,
+        Effect.acquireRelease(
+          Effect.sync(() => {
+            console.log("Initializing Prisma client");
+            return new PrismaClient();
+          }),
+          (prisma) => {
+            console.log("Disconnecting Prisma client");
+            return Effect.promise(() => prisma.$disconnect());
+          },
+        ),
+      )
+    : Layer.succeed(PrismaService, getPrismaClient());
 
 export const prismaOp =
   <A, Args extends any[]>(op: (...args: Args) => Promise<A>) =>

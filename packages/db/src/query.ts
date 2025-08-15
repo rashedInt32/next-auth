@@ -13,8 +13,8 @@ export const findUserById = (id: string) =>
     return yield* prismaOp(prisma.user.findUnique)({ where: { id } });
   });
 
-export const createUser = ({ data }: Record<string, any>) =>
+export const createUser = (data: Record<string, any>) =>
   Effect.gen(function* () {
     const prisma = yield* PrismaService;
-    return yield* prismaOp(prisma.user.create)(data);
+    return yield* prismaOp(prisma.user.create)({ data });
   });

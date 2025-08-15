@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { Effect } from "effect";
 import { PrismaLive, findUserByEmail, createUser } from "@repo/db";
+import { UserError } from "./error";
 
 export const registerUser = ({
   email,
@@ -12,12 +13,15 @@ export const registerUser = ({
   Effect.gen(function* () {
     const existing = yield* findUserByEmail(email);
     if (existing) {
-      const err: Record<string, any> = new Error("Email already in use");
-      err.code = "EMAIL_EXISTS";
-      throw err;
+      return yield* Effect.fail(
+        new UserError({
+          message: "Email already exists",
+          code: "EMAIL_EXISTS",
+        }),
+      );
     }
 
     const passwordHash = yield* Effect.promise(() => bcrypt.hash(password, 10));
 
-    return yield* createUser({ email, passwordHash });
+    return yield* createUser({ email, password: passwordHash });
   }).pipe(Effect.provide(PrismaLive));

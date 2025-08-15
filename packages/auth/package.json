@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./src/index.ts"
+    "./options": {
+      "types": "./dist/options.d.ts",
+      "default": "./src/options.ts"
     },
     "./next": {
       "types": "./dist/next.d.ts",
@@ -14,11 +14,10 @@
     "./signup-route": {
       "types": "./dist/signup-route.d.ts",
       "default": "./src/signup-route.ts"
-    },
-
+    }
   },
   "scripts": {
-    "dev": "tsc",
+    "dev": "tsc --watch",
     "build": "tsc",
     "lint": "eslint . --max-warnings 0",
     "check-types": "tsc --noEmit"
@@ -35,6 +34,7 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
+    "@prisma/client": "6.13.0",
     "bcryptjs": "^3.0.2",
     "effect": "^3.17.6",
     "next": "^15.4.2",

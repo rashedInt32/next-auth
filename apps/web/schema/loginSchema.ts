@@ -1,6 +1,6 @@
 import { Schema } from "effect";
 
-export const loginResolver = Schema.Struct({
+export const authResolver = Schema.Struct({
   email: Schema.String.pipe(
     Schema.pattern(/^[a-z0-9_'+\-\.]+@[a-z0-9][a-z0-9\-]*\.[a-z]{2,}$/i, {
       message: () => "Invalid email",
@@ -13,4 +13,4 @@ export const loginResolver = Schema.Struct({
   ),
 });
 
-export type LoginSchema = typeof loginResolver.Type;
+export type authSchema = typeof authResolver.Type;

@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import { Effect, Console } from "effect";
 import { registerUser } from "./signup";
 import { NextResponse } from "next/server";
 
@@ -12,21 +12,27 @@ export async function POST(req: Request) {
     );
   }
 
-  try {
-    const user = await Effect.runPromise(registerUser({ email, password }));
+  const userCreation = registerUser({ email, password }).pipe(
+    Effect.map((user) => {
+      return NextResponse.json({ user }, { status: 201 });
+    }),
+    Effect.catchTag("UserError", (err) =>
+      Effect.succeed(
+        NextResponse.json(
+          { error: err.message },
+          { status: err.code === "EMAIL_EXISTS" ? 409 : 500 },
+        ),
+      ),
+    ),
+    Effect.catchAll((err) =>
+      Effect.succeed(
+        NextResponse.json(
+          { error: err?.message ?? "An unexpected error occurred" },
+          { status: 500 },
+        ),
+      ),
+    ),
+  );
 
-    const { passwordHash, ...safeUser } = user as any;
-    return NextResponse.json({ user: safeUser }, { status: 201 });
-  } catch (err: any) {
-    if (err.code === "EMAIL_EXISTS") {
-      return NextResponse.json(
-        { error: "Email already in use" },
-        { status: 409 },
-      );
-    }
-    return NextResponse.json(
-      { error: err.message ?? "Signup failed" },
-      { status: 500 },
-    );
-  }
+  return Effect.runPromise(userCreation);
 }
