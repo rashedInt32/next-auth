@@ -18,6 +18,10 @@
     "./login": {
       "types": "./dist/login.d.ts",
       "default": "./src/login.ts"
+    },
+    "./error": {
+      "types": "./dist/error.d.ts",
+      "default": "./src/error.ts"
     }
 
   },

@@ -16,6 +16,9 @@ import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
 import { authSchema, authResolver } from "@/schema/loginSchema";
 import { signIn } from "@/auth";
+import { Effect, Cause, Exit } from "effect";
+import { loginEffect } from "@/auth";
+import { UserError } from "@repo/auth/error";
 
 export const LoginForm = () => {
   const form = useForm<authSchema>({
@@ -29,31 +32,18 @@ export const LoginForm = () => {
   const onSubmit = async (data: authSchema) => {
     const { email, password } = data;
 
-    if (!email || !password) {
-      form.setError("root", { message: "Email and password are required." });
-      return;
-    }
-
-    try {
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        const errorMessage =
-          result.error === "CredentialsSignin"
-            ? "Invalid email or password."
-            : result.error || "An unexpected error occurred.";
-        form.setError("root", { message: errorMessage });
-        return;
-      }
-
-      window.location.href = "/dashboard"; // Or use Next.js router
-    } catch (error) {
-      form.setError("root", { message: "An unexpected error occurred." });
-    }
+    const program = loginEffect(email, password).pipe(
+      Effect.matchEffect({
+        onFailure: (e: UserError) => {
+          console.error("Login failed:", e);
+          return Effect.sync(() => {
+            form.setError("root", { message: e.message });
+          });
+        },
+        onSuccess: () => Effect.void,
+      }),
+    );
+    await Effect.runPromise(program);
   };
 
   return (
@@ -97,9 +87,8 @@ export const LoginForm = () => {
             )}
           />
 
-          <FormError message="" />
-          <pre>{JSON.stringify(form.formState.errors)}</pre>
-          <FormSuccess message="" />
+          <FormError message={form.formState.errors?.root?.message} />
+          <FormSuccess message={form.formState.errors?.root?.message} />
           <Button type="submit" className="w-full">
             Submit
           </Button>
