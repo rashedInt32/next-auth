@@ -14,7 +14,12 @@
     "./signup-route": {
       "types": "./dist/signup-route.d.ts",
       "default": "./src/signup-route.ts"
+    },
+    "./login": {
+      "types": "./dist/login.d.ts",
+      "default": "./src/login.ts"
     }
+
   },
   "scripts": {
     "dev": "tsc --watch",

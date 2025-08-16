@@ -1,8 +1,9 @@
-"use server";
+"use client";
 import { signIn } from "@/auth";
 import { authSchema } from "@/schema/loginSchema";
 
 export const loginAction = async (data: authSchema) => {
+  "use client";
   const { email, password } = data;
 
   console.log("Login action data:", data);

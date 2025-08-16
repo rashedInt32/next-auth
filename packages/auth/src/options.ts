@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
-import { Effect, Exit, Layer } from "effect";
+import { Effect, Exit } from "effect";
 import { findUserByEmail, PrismaLive } from "@repo/db";
 
 const prisma = new PrismaClient();
@@ -19,44 +19,33 @@ export const authOptions: NextAuthConfig = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        console.log("Authorize called with credentials:", credentials); // Debug
         if (!credentials?.email || !credentials?.password) {
-          console.log("Missing credentials");
           return null;
         }
 
-        const email = credentials.email as string;
-        const password = credentials.password as string;
+        const credentialsEffect = Effect.gen(function* () {
+          const user = yield* findUserByEmail(credentials.email as string);
+          if (!user?.password) return null;
 
-        const userEffect = findUserByEmail(email);
-        const exit = await Effect.runPromiseExit(
-          userEffect.pipe(Effect.provide(PrismaLive)),
-        );
+          const isValie = yield* Effect.tryPromise(() =>
+            bcrypt.compare(credentials.password! as string, user?.password!),
+          );
 
-        if (Exit.isFailure(exit)) {
-          console.log("User not found:", exit.cause);
-          return null; // User not found
-        }
+          if (!isValie) return null;
 
-        const user = exit.value;
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+          };
+        }).pipe(Effect.provide(PrismaLive));
 
-        if (!user?.password) {
-          console.log("User has no password set");
-          return null; // No password set
-        }
+        const exit = await Effect.runPromiseExit(credentialsEffect);
 
-        const isValid = await bcrypt.compare(password, user.password);
-        if (!isValid) {
-          console.log("Invalid password");
-          return null; // Invalid password
-        }
-
-        console.log("User authenticated:", user);
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-        };
+        return Exit.match(exit, {
+          onFailure: () => null,
+          onSuccess: (user) => user,
+        });
       },
     }),
   ],
