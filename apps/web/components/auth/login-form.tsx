@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { effectTsResolver } from "@hookform/resolvers/effect-ts";
 import { CardWrapper } from "./card-wrapper";
@@ -13,14 +14,13 @@ import {
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FormError } from "./form-error";
-import { FormSuccess } from "./form-success";
 import { authSchema, authResolver } from "@/schema/loginSchema";
-import { signIn } from "@/auth";
-import { Effect, Cause, Exit } from "effect";
+import { Effect } from "effect";
 import { loginEffect } from "@/auth";
 import { UserError } from "@repo/auth/error";
 
 export const LoginForm = () => {
+  const rotuer = useRouter();
   const form = useForm<authSchema>({
     resolver: effectTsResolver(authResolver),
     defaultValues: {
@@ -32,16 +32,11 @@ export const LoginForm = () => {
   const onSubmit = async (data: authSchema) => {
     const { email, password } = data;
 
-    const program = loginEffect(email, password).pipe(
-      Effect.matchEffect({
-        onFailure: (e: UserError) => {
-          console.error("Login failed:", e);
-          return Effect.sync(() => {
-            form.setError("root", { message: e.message });
-          });
-        },
-        onSuccess: () => Effect.void,
-      }),
+    const program = loginEffect(email, password, rotuer).pipe(
+      Effect.tapError((e: UserError) =>
+        Effect.sync(() => form.setError("root", { message: e.message })),
+      ),
+      Effect.asVoid,
     );
     await Effect.runPromise(program);
   };
@@ -88,7 +83,6 @@ export const LoginForm = () => {
           />
 
           <FormError message={form.formState.errors?.root?.message} />
-          <FormSuccess message={form.formState.errors?.root?.message} />
           <Button type="submit" className="w-full">
             Submit
           </Button>

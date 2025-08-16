@@ -1,7 +1,8 @@
 import { Effect } from "effect";
 import { signIn } from "next-auth/react";
 import { UserError } from "./error";
-
+import { useRouter } from "next/navigation";
+import { Return } from "@prisma/client/runtime/library";
 export const validateInput = (email: string, password: string) =>
   !email || !password
     ? Effect.fail(
@@ -43,14 +44,19 @@ export const interpretSignInResult = (result: any) =>
       )
     : Effect.succeed(result);
 
-export const redirectToDashboard = Effect.sync(() => {
-  window.location.href = "/dashboard";
-});
+export const redirectToDashboard = (router: ReturnType<typeof useRouter>) =>
+  Effect.sync(() => {
+    router.push("/dashboard");
+  });
 
-export const loginEffect = (email: string, password: string) =>
+export const loginEffect = (
+  email: string,
+  password: string,
+  router: ReturnType<typeof useRouter>,
+) =>
   Effect.gen(function* () {
     yield* validateInput(email, password);
     const result = yield* callSignIn(email, password);
     yield* interpretSignInResult(result);
-    yield* redirectToDashboard;
+    yield* redirectToDashboard(router);
   });

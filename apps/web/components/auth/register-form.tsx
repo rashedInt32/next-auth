@@ -15,7 +15,7 @@ import { Button } from "../ui/button";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
 import { authSchema, authResolver } from "@/schema/loginSchema";
-import { createUserAction } from "@/app/auth/login/action";
+import { createUserAction } from "@/app/auth/action";
 
 export const RegisterFrom = () => {
   const form = useForm<authSchema>({
@@ -38,8 +38,8 @@ export const RegisterFrom = () => {
   return (
     <CardWrapper
       headerLabel="Welcome back"
-      backButtonHref="/auth/register"
-      backButtonLabel="Don't have an account? Register"
+      backButtonHref="/auth/login"
+      backButtonLabel="Already have an account? Login"
       showSocial
     >
       <Form {...form}>
