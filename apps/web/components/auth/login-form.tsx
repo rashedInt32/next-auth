@@ -1,5 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { effectTsResolver } from "@hookform/resolvers/effect-ts";
 import { CardWrapper } from "./card-wrapper";
@@ -73,7 +74,15 @@ export const LoginForm = () => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel className="flex items-center justify-between">
+                  Password{" "}
+                  <Link
+                    className="text-blue-500 text-[12px] underline"
+                    href="/password-reset"
+                  >
+                    Forgot Password
+                  </Link>
+                </FormLabel>
                 <FormControl>
                   <Input placeholder="******" type="password" {...field} />
                 </FormControl>

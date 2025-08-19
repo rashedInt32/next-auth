@@ -13,4 +13,8 @@ export const authResolver = Schema.Struct({
   ),
 });
 
+export const passwordResetResolver = Schema.Struct({
+  email: authResolver.fields.email,
+});
+
 export type authSchema = typeof authResolver.Type;
