@@ -15,9 +15,8 @@ import { Button } from "../ui/button";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
 import { authSchema, passwordResetResolver } from "@/schema/loginSchema";
-import { createUserAction } from "@/app/auth/action";
 
-export const RegisterFrom = () => {
+export const PasswordResetFrom = () => {
   const form = useForm<Omit<authSchema, "password">>({
     resolver: effectTsResolver(passwordResetResolver),
     defaultValues: {
@@ -30,8 +29,6 @@ export const RegisterFrom = () => {
     if (!email) {
       return;
     }
-    const user = await createUserAction(data);
-    console.log("User creation response:", user);
   };
 
   return (

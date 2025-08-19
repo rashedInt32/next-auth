@@ -2,7 +2,7 @@ import { Effect } from "effect";
 import { signIn } from "next-auth/react";
 import { UserError } from "./error";
 import { useRouter } from "next/navigation";
-import { Return } from "@prisma/client/runtime/library";
+
 export const validateInput = (email: string, password: string) =>
   !email || !password
     ? Effect.fail(

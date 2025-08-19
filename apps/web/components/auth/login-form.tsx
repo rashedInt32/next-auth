@@ -25,8 +25,8 @@ export const LoginForm = () => {
   const form = useForm<authSchema>({
     resolver: effectTsResolver(authResolver),
     defaultValues: {
-      email: "admin@admin.com",
-      password: "Pwd1234!",
+      email: "",
+      password: "",
     },
   });
 
