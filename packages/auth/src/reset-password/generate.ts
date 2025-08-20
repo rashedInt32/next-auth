@@ -1,5 +1,5 @@
 import { findUserByEmail, PrismaLive } from "@repo/db";
-import { Effect } from "effect";
+import { Console, Effect } from "effect";
 import { UserError } from "../error";
 import { SignJWT } from "jose";
 import { createPasswordResetToken } from "../../../db/dist/query";
@@ -21,6 +21,8 @@ export const generateResetPasswordToken = (email: string) =>
       );
     }
 
+    yield* Console.log(existingUser);
+
     const signToken = yield* Effect.promise(() =>
       new SignJWT({
         email: existingUser.email,
@@ -32,11 +34,11 @@ export const generateResetPasswordToken = (email: string) =>
         .sign(secret),
     );
 
-    const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
+    const expires = new Date(Date.now() + 60 * 1000);
 
     return yield* createPasswordResetToken({
-      email: existingUser.email,
+      email: existingUser.email as string,
       token: signToken,
-      expiresAt,
+      expires,
     });
   }).pipe(Effect.provide(PrismaLive));

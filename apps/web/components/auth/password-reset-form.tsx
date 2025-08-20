@@ -15,6 +15,7 @@ import { Button } from "../ui/button";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
 import { authSchema, passwordResetResolver } from "@/schema/loginSchema";
+import { generateResetPasswordTokenAction } from "@/app/auth/action";
 
 export const PasswordResetFrom = () => {
   const form = useForm<Omit<authSchema, "password">>({
@@ -26,9 +27,8 @@ export const PasswordResetFrom = () => {
 
   const onSubmit = async (data: Omit<authSchema, "password">) => {
     const { email } = data;
-    if (!email) {
-      return;
-    }
+    const token = await generateResetPasswordTokenAction({ email });
+    console.log("token", token);
   };
 
   return (
@@ -36,6 +36,7 @@ export const PasswordResetFrom = () => {
       headerLabel="Enter you email to get reset link"
       backButtonHref="/auth/login"
       backButtonLabel="Go back to Login"
+      showSocial={false}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

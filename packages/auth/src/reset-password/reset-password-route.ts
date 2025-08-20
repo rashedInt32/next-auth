@@ -21,9 +21,7 @@ export async function POST(req: Request) {
       ),
     ),
     Effect.catchAll((err) =>
-      Effect.succeed(
-        NextResponse.json({ error: "Something went wrong" }, { status: 500 }),
-      ),
+      Effect.succeed(NextResponse.json({ error: err }, { status: 500 })),
     ),
   );
 

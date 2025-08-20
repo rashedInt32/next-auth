@@ -12,6 +12,7 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
+
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FormError } from "./form-error";
@@ -78,7 +79,7 @@ export const LoginForm = () => {
                   Password{" "}
                   <Link
                     className="text-blue-500 text-[12px] underline"
-                    href="/password-reset"
+                    href="/auth/password-reset"
                   >
                     Forgot Password
                   </Link>
