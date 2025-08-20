@@ -18,3 +18,13 @@ export const createUser = (data: Record<string, any>) =>
     const prisma = yield* PrismaService;
     return yield* prismaOp(prisma.user.create)({ data });
   });
+
+export const createPasswordResetToken = (data: {
+  email: string;
+  token: string;
+  expires: Date;
+}) =>
+  Effect.gen(function* () {
+    const prisma = yield* PrismaService;
+    return yield* prismaOp(prisma.passwordResetToken.create)({ data });
+  });

@@ -18,3 +18,24 @@ export const createUserAction = async (data: authSchema) => {
 
   return { success: true, user: response.user };
 };
+
+export const generateResetPasswordTokenAction = async (
+  data: Omit<authSchema, "password">,
+) => {
+  const { email } = data;
+
+  const token = await fetch("http://localhost:3000/api/reset-password", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email }),
+  });
+
+  const response = await token.json();
+  if (response.error) {
+    return { error: response.error || "Failed to generate Token" };
+  }
+
+  return { success: true, token: response.token };
+};

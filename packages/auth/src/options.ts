@@ -1,4 +1,3 @@
-// packages/auth/src/options.ts
 import type { NextAuthConfig } from "next-auth";
 import bcrypt from "bcryptjs";
 import Credentials from "next-auth/providers/credentials";

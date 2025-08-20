@@ -7,4 +7,9 @@ export {
 
 export { PrismaClient } from "@prisma/client";
 
-export { findUserByEmail, findUserById, createUser } from "./query";
+export {
+  findUserByEmail,
+  findUserById,
+  createUser,
+  createPasswordResetToken,
+} from "./query";
