@@ -1,15 +1,16 @@
 import { findUserByEmail, PrismaLive } from "@repo/db";
-import { Console, Effect } from "effect";
+import { Effect, Layer } from "effect";
 import { UserError } from "../error";
-import { SignJWT } from "jose";
-import { createPasswordResetToken } from "../../../db/dist/query";
+import { createPasswordResetToken } from "@repo/db";
+import { CryptoService, CryptoServiceLive } from "../service/jwt";
 
-const secret = new TextEncoder().encode(
-  "cc7e0d44fd473002f1c42167459001140ec6389b7353f8088f4d9a95f2f596f2",
-);
-const alg = "HS256";
-
-export const generateResetPasswordToken = (email: string) =>
+/**
+ *
+ * @param email string
+ * @param duration number in minute
+ * @returns
+ */
+export const generateResetPasswordToken = (email: string, duration?: number) =>
   Effect.gen(function* () {
     const existingUser = yield* findUserByEmail(email);
     if (!existingUser) {
@@ -21,24 +22,35 @@ export const generateResetPasswordToken = (email: string) =>
       );
     }
 
-    yield* Console.log(existingUser);
+    const RESET_TOKEN_MINUTE = duration ?? 1;
 
-    const signToken = yield* Effect.promise(() =>
-      new SignJWT({
+    const cryptoService = yield* CryptoService;
+    const token = yield* cryptoService.signJwt(
+      {
         email: existingUser.email,
         id: existingUser.id,
-      })
-        .setProtectedHeader({ alg })
-        .setIssuedAt()
-        .setExpirationTime("24h")
-        .sign(secret),
+      },
+      `${RESET_TOKEN_MINUTE}m`,
     );
-
-    const expires = new Date(Date.now() + 60 * 1000);
 
     return yield* createPasswordResetToken({
       email: existingUser.email as string,
-      token: signToken,
-      expires,
+      token,
+      expires: new Date(Date.now() + RESET_TOKEN_MINUTE * 60 * 1000),
     });
-  }).pipe(Effect.provide(PrismaLive));
+  }).pipe(
+    Effect.provide(
+      Layer.merge(
+        CryptoServiceLive(process.env.NEXT_PUBLIC_CRYPTO_SECRET!),
+        PrismaLive,
+      ),
+    ),
+    Effect.catchTag("JwtSignError", ({ cause }) =>
+      Effect.fail(
+        new UserError({
+          code: "TOKEN_GENERATION_FAILED",
+          message: `Failed to generate token ${cause}`,
+        }),
+      ),
+    ),
+  );

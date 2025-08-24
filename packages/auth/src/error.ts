@@ -6,5 +6,6 @@ export class UserError extends Data.TaggedError("UserError")<{
     | "EMAIL_EXISTS"
     | "INVALID_CREDENTIALS"
     | "USER_NOT_FOUND"
+    | "TOKEN_GENERATION_FAILED"
     | "UNKNOWN_ERROR";
 }> {}

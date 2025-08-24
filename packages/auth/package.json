@@ -26,6 +26,10 @@
     "./reset-password-route": {
       "types": "./dist/reset-password/reset-password-route.d.ts",
       "default": "./src/reset-password/reset-password-route.ts"
+    },
+    "./crypto-service": {
+      "types": "./dist/service/jwt.d.ts",
+      "default": "./src/service/jwt.ts"
     }
   },
   "scripts": {
