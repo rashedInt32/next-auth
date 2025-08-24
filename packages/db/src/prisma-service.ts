@@ -30,11 +30,9 @@ export const PrismaLive =
         PrismaService,
         Effect.acquireRelease(
           Effect.sync(() => {
-            console.log("Initializing Prisma client");
             return new PrismaClient();
           }),
           (prisma) => {
-            console.log("Disconnecting Prisma client");
             return Effect.promise(() => prisma.$disconnect());
           },
         ),

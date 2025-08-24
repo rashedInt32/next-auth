@@ -51,6 +51,7 @@
     "effect": "^3.17.6",
     "jose": "^6.0.12",
     "next": "^15.4.2",
-    "next-auth": "5.0.0-beta.29"
+    "next-auth": "5.0.0-beta.29",
+    "resend": "^6.0.1"
   }
 }

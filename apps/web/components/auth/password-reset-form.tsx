@@ -28,6 +28,9 @@ export const PasswordResetFrom = () => {
   const onSubmit = async (data: Omit<authSchema, "password">) => {
     const { email } = data;
     const token = await generateResetPasswordTokenAction({ email });
+    if (token?.error && token?.error !== undefined) {
+      form.setError("root", { message: token?.error });
+    }
     console.log("token", token);
   };
 
@@ -58,7 +61,7 @@ export const PasswordResetFrom = () => {
             )}
           />
 
-          <FormError message="" />
+          <FormError message={form.formState?.errors?.root?.message} />
           <FormSuccess message="" />
           <Button type="submit" className="w-full">
             Submit

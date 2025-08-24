@@ -1,4 +1,4 @@
-import { Effect, Console } from "effect";
+import { Effect } from "effect";
 import { registerUser } from "./signup";
 import { NextResponse } from "next/server";
 
