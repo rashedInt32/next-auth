@@ -28,3 +28,11 @@ export const createPasswordResetToken = (data: {
     const prisma = yield* PrismaService;
     return yield* prismaOp(prisma.passwordResetToken.create)({ data });
   });
+
+export const deletePasswordResetToken = (data: { email: string }) =>
+  Effect.gen(function* () {
+    const prisma = yield* PrismaService;
+    return yield* prismaOp(prisma.passwordResetToken.deleteMany)({
+      where: { email: data.email },
+    });
+  });

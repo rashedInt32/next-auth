@@ -37,5 +37,5 @@ export const generateResetPasswordTokenAction = async (
     return { error: response.error || "Failed to generate Token" };
   }
 
-  return { success: true, token: response.token };
+  return { success: true, message: response.message };
 };

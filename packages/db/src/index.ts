@@ -12,4 +12,5 @@ export {
   findUserById,
   createUser,
   createPasswordResetToken,
+  deletePasswordResetToken,
 } from "./query";

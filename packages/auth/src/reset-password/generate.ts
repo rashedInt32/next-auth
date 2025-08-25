@@ -1,7 +1,7 @@
 import { findUserByEmail, PrismaLive } from "@repo/db";
 import { Effect, Layer } from "effect";
 import { UserError } from "../error";
-import { createPasswordResetToken } from "@repo/db";
+import { createPasswordResetToken, deletePasswordResetToken } from "@repo/db";
 import { CryptoService, CryptoServiceLive } from "../service/jwt";
 
 /**
@@ -21,6 +21,8 @@ export const generateResetPasswordToken = (email: string, duration?: number) =>
         }),
       );
     }
+
+    yield* deletePasswordResetToken({ email: existingUser.email as string });
 
     const RESET_TOKEN_MINUTE = duration ?? 1;
 
