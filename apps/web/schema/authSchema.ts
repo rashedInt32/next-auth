@@ -22,9 +22,9 @@ export const ResetPasswordResolver = Schema.Struct({
     Schema.nonEmptyString({ message: () => "Token is required" }),
   ),
   password: authResolver.fields.password,
-  configmPassword: authResolver.fields.password,
+  confirmPassword: authResolver.fields.password,
 }).pipe(
-  Schema.filter((data) => data.password === data.configmPassword, {
+  Schema.filter((data) => data.password === data.confirmPassword, {
     message: () => "Password does not match",
   }),
 );

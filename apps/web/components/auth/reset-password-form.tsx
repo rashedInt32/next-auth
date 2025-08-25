@@ -26,12 +26,12 @@ export const ResetPasswordForm = () => {
     defaultValues: {
       token: "",
       password: "",
-      configmPassword: "",
+      confirmPassword: "",
     },
   });
 
   const onSubmit = async (data: resetPasswordSchema) => {
-    const { token, password, configmPassword } = data;
+    const { token, password, confirmPassword } = data;
   };
 
   const resetForm = () => {
@@ -64,7 +64,7 @@ export const ResetPasswordForm = () => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>New Password</FormLabel>
                 <FormControl>
                   <Input type="password" {...field} placeholder="********" />
                 </FormControl>
@@ -75,7 +75,7 @@ export const ResetPasswordForm = () => {
 
           <FormField
             control={form.control}
-            name="configmPassword"
+            name="confirmPassword"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
