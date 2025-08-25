@@ -19,12 +19,12 @@ export const createUserAction = async (data: authSchema) => {
   return { success: true, user: response.user };
 };
 
-export const resetPasswordAction = async (
+export const forgotPasswordAction = async (
   data: Omit<authSchema, "password">,
 ) => {
   const { email } = data;
 
-  const token = await fetch("http://localhost:3000/api/reset-password", {
+  const token = await fetch("http://localhost:3000/api/forgot-password", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
