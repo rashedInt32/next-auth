@@ -20,6 +20,7 @@ import { authSchema, authResolver } from "@/schema/authSchema";
 import { Effect } from "effect";
 import { loginEffect } from "@/auth";
 import { UserError } from "@repo/auth/error";
+import { Loader2 } from "lucide-react";
 
 export const LoginForm = () => {
   const rotuer = useRouter();
@@ -93,8 +94,19 @@ export const LoginForm = () => {
           />
 
           <FormError message={form.formState.errors?.root?.message} />
-          <Button type="submit" className="w-full">
-            Submit
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={form.formState.isSubmitting}
+          >
+            {form.formState.isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Login
+              </>
+            ) : (
+              "Login"
+            )}
           </Button>
         </form>
       </Form>

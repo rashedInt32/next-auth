@@ -14,31 +14,27 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
-import { authSchema, passwordResetResolver } from "@/schema/authSchema";
-import { generateResetPasswordTokenAction } from "@/app/auth/action";
+import {
+  resetPasswordSchema,
+  ResetPasswordResolver,
+} from "@/schema/authSchema";
 import { useState } from "react";
 import { Mail, Loader2 } from "lucide-react";
 
 export const ResetPasswordForm = () => {
   const [success, setSuccess] = useState(false);
 
-  const form = useForm<Omit<authSchema, "password">>({
-    resolver: effectTsResolver(passwordResetResolver),
+  const form = useForm<resetPasswordSchema>({
+    resolver: effectTsResolver(ResetPasswordResolver),
     defaultValues: {
-      email: "",
+      token: "",
+      password: "",
+      configmPassword: "",
     },
   });
 
-  const onSubmit = async (data: Omit<authSchema, "password">) => {
-    const { email } = data;
-    const token = await generateResetPasswordTokenAction({ email });
-
-    if (token?.error) {
-      form.setError("root", { message: token.error });
-      setSuccess(false);
-    } else if (token?.success) {
-      setSuccess(true);
-    }
+  const onSubmit = async (data: resetPasswordSchema) => {
+    const { token, password, configmPassword } = data;
   };
 
   const resetForm = () => {
@@ -58,16 +54,38 @@ export const ResetPasswordForm = () => {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
-              name="email"
+              name="token"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="example@example.com"
-                      {...field}
-                    />
+                    <Input type="text" {...field} hidden />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="configmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Configm Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

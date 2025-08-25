@@ -2,6 +2,7 @@
 import { useForm } from "react-hook-form";
 import { effectTsResolver } from "@hookform/resolvers/effect-ts";
 import { CardWrapper } from "./card-wrapper";
+import { Loader2 } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -78,8 +79,19 @@ export const RegisterFrom = () => {
 
           <FormError message="" />
           <FormSuccess message="" />
-          <Button type="submit" className="w-full">
-            Submit
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={form.formState.isSubmitting}
+          >
+            {form.formState.isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Register
+              </>
+            ) : (
+              "Register"
+            )}
           </Button>
         </form>
       </Form>
