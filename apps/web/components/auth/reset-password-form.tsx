@@ -14,12 +14,12 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
-import { authSchema, passwordResetResolver } from "@/schema/loginSchema";
+import { authSchema, passwordResetResolver } from "@/schema/authSchema";
 import { generateResetPasswordTokenAction } from "@/app/auth/action";
 import { useState } from "react";
 import { Mail, Loader2 } from "lucide-react";
 
-export const PasswordResetFrom = () => {
+export const ResetPasswordForm = () => {
   const [success, setSuccess] = useState(false);
 
   const form = useForm<Omit<authSchema, "password">>({

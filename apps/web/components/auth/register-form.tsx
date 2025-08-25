@@ -14,7 +14,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
-import { authSchema, authResolver } from "@/schema/loginSchema";
+import { authSchema, authResolver } from "@/schema/authSchema";
 import { createUserAction } from "@/app/auth/action";
 
 export const RegisterFrom = () => {

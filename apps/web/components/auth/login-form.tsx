@@ -16,7 +16,7 @@ import {
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FormError } from "./form-error";
-import { authSchema, authResolver } from "@/schema/loginSchema";
+import { authSchema, authResolver } from "@/schema/authSchema";
 import { Effect } from "effect";
 import { loginEffect } from "@/auth";
 import { UserError } from "@repo/auth/error";
@@ -79,7 +79,7 @@ export const LoginForm = () => {
                   Password{" "}
                   <Link
                     className="text-blue-500 text-[12px] underline"
-                    href="/auth/password-reset"
+                    href="/auth/forgot-password"
                   >
                     Forgot Password
                   </Link>

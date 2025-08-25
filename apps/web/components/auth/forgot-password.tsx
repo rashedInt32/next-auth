@@ -14,8 +14,8 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FormError } from "./form-error";
 import { FormSuccess } from "./form-success";
-import { authSchema, passwordResetResolver } from "@/schema/loginSchema";
-import { generateResetPasswordTokenAction } from "@/app/auth/action";
+import { authSchema, ForgotPasswordResolver } from "@/schema/authSchema";
+import { resetPasswordAction } from "@/app/auth/action";
 import { useState } from "react";
 import { Mail, Loader2 } from "lucide-react";
 
@@ -23,7 +23,7 @@ export const ForgotPasswordForm = () => {
   const [success, setSuccess] = useState(false);
 
   const form = useForm<Omit<authSchema, "password">>({
-    resolver: effectTsResolver(passwordResetResolver),
+    resolver: effectTsResolver(ForgotPasswordResolver),
     defaultValues: {
       email: "",
     },
@@ -31,7 +31,7 @@ export const ForgotPasswordForm = () => {
 
   const onSubmit = async (data: Omit<authSchema, "password">) => {
     const { email } = data;
-    const token = await generateResetPasswordTokenAction({ email });
+    const token = await resetPasswordAction({ email });
 
     if (token?.error) {
       form.setError("root", { message: token.error });

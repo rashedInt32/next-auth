@@ -1,4 +1,4 @@
-import { authSchema } from "@/schema/loginSchema";
+import { authSchema } from "@/schema/authSchema";
 
 export const createUserAction = async (data: authSchema) => {
   const { email, password } = data;
@@ -19,7 +19,7 @@ export const createUserAction = async (data: authSchema) => {
   return { success: true, user: response.user };
 };
 
-export const generateResetPasswordTokenAction = async (
+export const resetPasswordAction = async (
   data: Omit<authSchema, "password">,
 ) => {
   const { email } = data;
