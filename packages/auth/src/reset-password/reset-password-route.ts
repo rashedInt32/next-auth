@@ -35,17 +35,20 @@ export async function POST(req: Request) {
         ),
       ),
     ),
-    Effect.catchTag("EmailSendError", () =>
+    Effect.catchTag("EmailSendError", (err) =>
       Effect.succeed(
         NextResponse.json(
-          { error: "Failed to send reset email, Please try again later" },
+          { error: "Failed to send reset email, Please try again later", err },
           { status: 500 },
         ),
       ),
     ),
-    Effect.catchAll(() =>
+    Effect.catchAll((err) =>
       Effect.succeed(
-        NextResponse.json({ error: "Internal server error" }, { status: 500 }),
+        NextResponse.json(
+          { error: "Internal server error", err },
+          { status: 500 },
+        ),
       ),
     ),
   );

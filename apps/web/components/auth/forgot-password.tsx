@@ -19,7 +19,7 @@ import { generateResetPasswordTokenAction } from "@/app/auth/action";
 import { useState } from "react";
 import { Mail, Loader2 } from "lucide-react";
 
-export const PasswordResetFrom = () => {
+export const ForgotPasswordForm = () => {
   const [success, setSuccess] = useState(false);
 
   const form = useForm<Omit<authSchema, "password">>({
