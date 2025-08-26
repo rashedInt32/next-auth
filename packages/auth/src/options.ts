@@ -1,12 +1,8 @@
 import type { NextAuthConfig, User } from "next-auth";
 import bcrypt from "bcryptjs";
 import Credentials from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
 import { Effect, Exit } from "effect";
 import { findUserByEmail, PrismaServiceLive } from "@repo/db";
-
-const prisma = new PrismaClient();
 
 interface DatabaseUser {
   id: string;
@@ -15,8 +11,20 @@ interface DatabaseUser {
   password: string | null;
 }
 
+// Use a function to get the Prisma adapter to avoid top-level Prisma client initialization
+const getPrismaAdapter = () => {
+  if (typeof window !== "undefined") {
+    return undefined;
+  }
+
+  const { PrismaClient } = require("@prisma/client");
+  const { PrismaAdapter } = require("@auth/prisma-adapter");
+  const prisma = new PrismaClient();
+  return PrismaAdapter(prisma);
+};
+
 export const authOptions: NextAuthConfig = {
-  adapter: PrismaAdapter(prisma),
+  adapter: getPrismaAdapter(),
   providers: [
     Credentials({
       name: "Credentials",
@@ -86,5 +94,5 @@ export const authOptions: NextAuthConfig = {
       return token;
     },
   },
-  debug: true,
+  debug: process.env.NODE_ENV === "development",
 };
