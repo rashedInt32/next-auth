@@ -4,7 +4,7 @@ import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
 import { Effect, Exit } from "effect";
-import { findUserByEmail, PrismaLive } from "@repo/db";
+import { findUserByEmail, PrismaServiceLive } from "@repo/db";
 
 const prisma = new PrismaClient();
 
@@ -37,7 +37,7 @@ export const authOptions: NextAuthConfig = {
             email: user.email,
             name: user.name,
           };
-        }).pipe(Effect.provide(PrismaLive));
+        }).pipe(Effect.provide(PrismaServiceLive));
 
         const exit = await Effect.runPromiseExit(credentialsEffect);
 

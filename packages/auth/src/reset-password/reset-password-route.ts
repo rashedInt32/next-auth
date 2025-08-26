@@ -1,59 +1,47 @@
 import { NextResponse } from "next/server";
-import { generateResetPasswordToken } from "./generate";
-import { Effect } from "effect";
-import { EmailService, EmailServiceLive } from "../service/email";
-import { emailBody } from "./emailBody";
+import { Console, Effect, Layer } from "effect";
+import { findResetToken, PrismaServiceLive } from "@repo/db";
+import { CryptoService, CryptoServiceLive } from "../service/jwt";
 
 export async function POST(req: Request) {
-  const { email } = await req.json();
-  if (!email) {
-    return NextResponse.json({ status: 400, message: "Email is missing" });
+  const { token, password, confirmPassword } = await req.json();
+  if (!token) {
+    return NextResponse.json({ status: 400, message: "Token is missing" });
   }
 
-  const createToken = Effect.gen(function* () {
-    const { token } = yield* generateResetPasswordToken(email);
-    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/auth/password-reset?token=${token}`;
+  const updatePassword = Effect.gen(function* () {
+    const response = yield* findResetToken(token);
+    if (!response?.token) {
+      return NextResponse.json({
+        status: 400,
+        message: "Invalid token or missing",
+      });
+    }
 
-    console.log(process.env.NEXT_PUBLIC_BASE_URL);
-
-    const emailService = yield* EmailService;
-    yield* emailService.sendEmail(
-      email,
-      emailBody(resetUrl),
-      "Reset your password",
-    );
+    const crypto = yield* CryptoService;
+    const verifyToken = yield* crypto.verifyJwt(response.token);
+    console.log("veryfytonen", verifyToken);
 
     return NextResponse.json({
       status: 201,
-      message: "Password reset email sent successfully",
+      message: "Update password successful",
     });
   }).pipe(
-    Effect.provide(EmailServiceLive),
-    Effect.catchTag("UserError", (err) =>
-      Effect.succeed(
-        NextResponse.json(
-          { error: err.message ?? "Unknows user error" },
-          { status: err.code === "USER_NOT_FOUND" ? 404 : 400 },
-        ),
+    Effect.provide(
+      Layer.merge(
+        CryptoServiceLive(process.env.NEXT_PUBLIC_CRYPTO_SECRET!),
+        PrismaServiceLive,
       ),
     ),
-    Effect.catchTag("EmailSendError", (err) =>
-      Effect.succeed(
-        NextResponse.json(
-          { error: "Failed to send reset email, Please try again later", err },
-          { status: 500 },
-        ),
-      ),
-    ),
-    Effect.catchAll((err) =>
-      Effect.succeed(
-        NextResponse.json(
-          { error: "Internal server error", err },
-          { status: 500 },
-        ),
-      ),
-    ),
+    Effect.catchTag("JwtVerifyEffor", (cause) => {
+      return Effect.succeed(
+        NextResponse.json({
+          status: 400,
+          message: `token varification failed ${cause}`,
+        }),
+      );
+    }),
   );
 
-  return Effect.runPromise(createToken);
+  return Effect.runPromise(updatePassword);
 }

@@ -1,7 +1,7 @@
 export {
   PrismaError,
   PrismaService,
-  PrismaLive,
+  PrismaServiceLive,
   prismaOp,
 } from "./prisma-service";
 
@@ -13,4 +13,5 @@ export {
   createUser,
   createPasswordResetToken,
   deletePasswordResetToken,
+  findResetToken,
 } from "./query";

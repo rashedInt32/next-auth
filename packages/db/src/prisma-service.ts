@@ -24,7 +24,7 @@ const getPrismaClient = () => {
   return globalPrisma.prisma;
 };
 
-export const PrismaLive =
+export const PrismaServiceLive =
   process.env.NODE_ENV === "production"
     ? Layer.scoped(
         PrismaService,

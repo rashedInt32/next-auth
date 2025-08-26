@@ -1,4 +1,4 @@
-import { authSchema } from "@/schema/authSchema";
+import { authSchema, resetPasswordSchema } from "@/schema/authSchema";
 
 export const createUserAction = async (data: authSchema) => {
   const { email, password } = data;
@@ -38,4 +38,14 @@ export const forgotPasswordAction = async (
   }
 
   return { success: true, message: response.message };
+};
+
+export const resetPasswordAction = async (data: resetPasswordSchema) => {
+  const response = await fetch("http://localhost:3000/api/reset-password", {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
 };

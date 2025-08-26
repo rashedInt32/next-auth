@@ -1,5 +1,6 @@
 "use client";
 import { useForm } from "react-hook-form";
+import { useSearchParams } from "next/navigation";
 import { effectTsResolver } from "@hookform/resolvers/effect-ts";
 import { CardWrapper } from "./card-wrapper";
 import {
@@ -19,19 +20,23 @@ import {
   ResetPasswordResolver,
 } from "@/schema/authSchema";
 import { Loader2 } from "lucide-react";
+import { resetPasswordAction } from "@/app/auth/action";
 
 export const ResetPasswordForm = () => {
+  const searchParam = useSearchParams();
+  const token = searchParam.get("token") ?? "";
   const form = useForm<resetPasswordSchema>({
     resolver: effectTsResolver(ResetPasswordResolver),
     defaultValues: {
-      token: "",
+      token,
       password: "",
       confirmPassword: "",
     },
   });
 
   const onSubmit = async (data: resetPasswordSchema) => {
-    const { token, password, confirmPassword } = data;
+    const response = await resetPasswordAction(data);
+    console.log("response", response);
   };
 
   const resetForm = () => {
@@ -47,18 +52,7 @@ export const ResetPasswordForm = () => {
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="token"
-            render={({ field }) => (
-              <FormItem className="h-0 m-0">
-                <FormControl>
-                  <Input type="text" {...field} hidden />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <input type="hidden" {...form.register("token")} />
           <FormField
             control={form.control}
             name="password"

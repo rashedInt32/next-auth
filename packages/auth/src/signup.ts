@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { Effect } from "effect";
-import { PrismaLive, findUserByEmail, createUser } from "@repo/db";
+import { PrismaServiceLive, findUserByEmail, createUser } from "@repo/db";
 import { UserError } from "./error";
 
 export const registerUser = ({
@@ -24,4 +24,4 @@ export const registerUser = ({
     const passwordHash = yield* Effect.promise(() => bcrypt.hash(password, 10));
 
     return yield* createUser({ email, password: passwordHash });
-  }).pipe(Effect.provide(PrismaLive));
+  }).pipe(Effect.provide(PrismaServiceLive));

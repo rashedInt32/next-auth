@@ -1,4 +1,4 @@
-import { findUserByEmail, PrismaLive } from "@repo/db";
+import { findUserByEmail, PrismaServiceLive } from "@repo/db";
 import { Effect, Layer } from "effect";
 import { UserError } from "../error";
 import { createPasswordResetToken, deletePasswordResetToken } from "@repo/db";
@@ -44,7 +44,7 @@ export const generateResetPasswordToken = (email: string, duration?: number) =>
     Effect.provide(
       Layer.merge(
         CryptoServiceLive(process.env.NEXT_PUBLIC_CRYPTO_SECRET!),
-        PrismaLive,
+        PrismaServiceLive,
       ),
     ),
     Effect.catchTag("JwtSignError", ({ cause }) =>

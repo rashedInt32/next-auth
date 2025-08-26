@@ -36,3 +36,11 @@ export const deletePasswordResetToken = (data: { email: string }) =>
       where: { email: data.email },
     });
   });
+
+export const findResetToken = (token: string) =>
+  Effect.gen(function* () {
+    const prisma = yield* PrismaService;
+    return yield* prismaOp(prisma.passwordResetToken.findUnique)({
+      where: { token },
+    });
+  });
