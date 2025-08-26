@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { Console, Effect, Layer } from "effect";
+import { Effect, Layer } from "effect";
 import { findResetToken, PrismaServiceLive } from "@repo/db";
 import { CryptoService, CryptoServiceLive } from "../service/jwt";
 
@@ -11,11 +11,12 @@ export async function POST(req: Request) {
 
   const updatePassword = Effect.gen(function* () {
     const response = yield* findResetToken(token);
-    console.log("response", response);
     if (!response?.token || response === null) {
-      return NextResponse.json(
-        { error: "Invalid or expired token" },
-        { status: 400 },
+      return yield* Effect.succeed(
+        NextResponse.json(
+          { error: "We couldn't find the token, please try again" },
+          { status: 400 },
+        ),
       );
     }
 
@@ -23,10 +24,12 @@ export async function POST(req: Request) {
     const verifyToken = yield* crypto.verifyJwt(response.token);
     console.log("veryfytonen", verifyToken);
 
-    return NextResponse.json({
-      status: 201,
-      message: "Update password successful",
-    });
+    return yield* Effect.succeed(
+      NextResponse.json({
+        status: 201,
+        message: "Update password successful",
+      }),
+    );
   }).pipe(
     Effect.provide(
       Layer.merge(
@@ -34,14 +37,24 @@ export async function POST(req: Request) {
         PrismaServiceLive,
       ),
     ),
-    Effect.catchTag("JwtVerifyEffor", (cause) => {
+    Effect.catchTag("JwtVerifyError", (err) => {
       return Effect.succeed(
-        NextResponse.json({
-          status: 400,
-          message: `token varification failed ${cause}`,
-        }),
+        NextResponse.json(
+          {
+            error: `Token expired, please request a new link.`,
+          },
+          { status: 400 },
+        ),
       );
     }),
+    Effect.catchAll((err) =>
+      Effect.succeed(
+        NextResponse.json(
+          { error: `Unexpected error: ${err}` },
+          { status: 500 },
+        ),
+      ),
+    ),
   );
 
   return Effect.runPromise(updatePassword);

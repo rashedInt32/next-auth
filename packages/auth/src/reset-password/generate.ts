@@ -24,7 +24,7 @@ export const generateResetPasswordToken = (email: string, duration?: number) =>
 
     yield* deletePasswordResetToken({ email: existingUser.email as string });
 
-    const RESET_TOKEN_MINUTE = duration ?? 1;
+    const RESET_TOKEN_MINUTE = duration ?? 5;
 
     const cryptoService = yield* CryptoService;
     const token = yield* cryptoService.signJwt(

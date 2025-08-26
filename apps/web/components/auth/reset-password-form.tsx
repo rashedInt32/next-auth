@@ -32,7 +32,6 @@ export const ResetPasswordForm = () => {
       password: "",
       confirmPassword: "",
     },
-    mode: "onChange",
   });
 
   const onSubmit = async (data: resetPasswordSchema) => {
@@ -44,15 +43,13 @@ export const ResetPasswordForm = () => {
     const response = await resetPasswordAction(data);
 
     if (response.error) {
-      form.setError("root", { message: response.error });
+      return form.setError("root", { message: response.error });
     }
   };
 
   const resetForm = () => {
     form.reset();
   };
-
-  console.log("form state", form.formState.errors);
 
   return (
     <CardWrapper

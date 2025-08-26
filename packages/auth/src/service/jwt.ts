@@ -5,7 +5,7 @@ export class JwtSignError extends Data.TaggedError("JwtSignError")<{
   readonly cause: unknown;
 }> {}
 
-export class JwtVerifyError extends Data.TaggedError("JwtVerifyEffor")<{
+export class JwtVerifyError extends Data.TaggedError("JwtVerifyError")<{
   readonly cause: unknown;
 }> {}
 
@@ -34,10 +34,10 @@ export const CryptoServiceLive = (secret: string) =>
               .sign(key),
           ).pipe(Effect.mapError((cause) => new JwtSignError({ cause }))),
         verifyJwt: (token) =>
-          Effect.promise(() => jwtVerify(token, key)).pipe(
-            Effect.map(({ payload }) => payload),
-            Effect.mapError((cause) => new JwtVerifyError({ cause })),
-          ),
+          Effect.tryPromise({
+            try: () => jwtVerify(token, key),
+            catch: (cause) => new JwtVerifyError({ cause }),
+          }).pipe(Effect.map(({ payload }) => payload)),
       });
     }),
   );

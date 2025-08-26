@@ -27,14 +27,7 @@ export const RegisterFrom = () => {
     },
   });
 
-  const onSubmit = async (data: authSchema) => {
-    const { email, password } = data;
-    if (!email || !password) {
-      return;
-    }
-    const user = await createUserAction(data);
-    console.log("User creation response:", user);
-  };
+  const onSubmit = async (data: authSchema) => await createUserAction(data);
 
   return (
     <CardWrapper
