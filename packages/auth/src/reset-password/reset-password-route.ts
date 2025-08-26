@@ -3,13 +3,10 @@ import { Effect, Layer } from "effect";
 import { findResetToken, PrismaServiceLive } from "@repo/db";
 import { CryptoService, CryptoServiceLive } from "../service/jwt";
 
-// Define response type from findResetToken
 interface ResetTokenResponse {
-  id?: string;
   token?: string;
   email?: string;
   expires?: Date;
-  // Add other properties that findResetToken returns
 }
 
 export async function POST(req: Request) {
@@ -20,7 +17,10 @@ export async function POST(req: Request) {
   }
 
   const updatePassword = Effect.gen(function* () {
-    const response: ResetTokenResponse | null = yield* findResetToken(token);
+    const tokenResult: unknown = yield* findResetToken(token);
+
+    // Type assertion for ResetTokenResponse
+    const response = tokenResult as ResetTokenResponse | null;
 
     if (!response?.token) {
       return yield* Effect.succeed(
