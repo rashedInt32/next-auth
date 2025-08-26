@@ -14,7 +14,6 @@ import {
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FormError } from "./form-error";
-import { FormSuccess } from "./form-success";
 import {
   resetPasswordSchema,
   ResetPasswordResolver,
@@ -45,10 +44,6 @@ export const ResetPasswordForm = () => {
     if (response.error) {
       return form.setError("root", { message: response.error });
     }
-  };
-
-  const resetForm = () => {
-    form.reset();
   };
 
   return (

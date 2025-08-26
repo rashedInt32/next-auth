@@ -1,5 +1,4 @@
 import { authSchema, resetPasswordSchema } from "@/schema/authSchema";
-import { succeed } from "effect/Exit";
 
 export const createUserAction = async (data: authSchema) => {
   const { email, password } = data;

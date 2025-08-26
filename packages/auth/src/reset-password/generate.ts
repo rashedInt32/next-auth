@@ -22,7 +22,7 @@ export const generateResetPasswordToken = (
   duration?: number,
 ): Effect.Effect<{ token: string }, UserError | PrismaError, never> =>
   Effect.gen(function* () {
-    const existingUser: User | null = yield* findUserByEmail(email);
+    const existingUser = yield* findUserByEmail(email);
     if (!existingUser) {
       return yield* Effect.fail(
         new UserError({

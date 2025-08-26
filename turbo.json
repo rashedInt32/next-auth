@@ -8,7 +8,8 @@
       "outputs": [
         ".next/**",
         "!.next/cache/**",
-        "!.next/static/cache/**"
+        "!.next/static/cache/**",
+        "dist/**"
       ]
     },
     "lint": {
