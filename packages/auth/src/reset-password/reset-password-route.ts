@@ -22,7 +22,6 @@ export async function POST(req: Request) {
 
     const crypto = yield* CryptoService;
     const verifyToken = yield* crypto.verifyJwt(response.token);
-    console.log("veryfytonen", verifyToken);
 
     return yield* Effect.succeed(
       NextResponse.json({
