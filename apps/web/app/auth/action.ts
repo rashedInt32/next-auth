@@ -1,4 +1,5 @@
 import { authSchema, resetPasswordSchema } from "@/schema/authSchema";
+import { succeed } from "effect/Exit";
 
 export const createUserAction = async (data: authSchema) => {
   const { email, password } = data;
@@ -48,4 +49,10 @@ export const resetPasswordAction = async (data: resetPasswordSchema) => {
     },
     body: JSON.stringify(data),
   });
+  const result = await response.json();
+
+  if (result.error) {
+    return { error: result.error || "Failed to reset password" };
+  }
+  return { success: true, message: result.message };
 };

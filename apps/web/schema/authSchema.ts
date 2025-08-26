@@ -23,11 +23,7 @@ export const ResetPasswordResolver = Schema.Struct({
   ),
   password: authResolver.fields.password,
   confirmPassword: authResolver.fields.password,
-}).pipe(
-  Schema.filter((data) => data.password === data.confirmPassword, {
-    message: () => "Password does not match",
-  }),
-);
+});
 
 export type authSchema = typeof authResolver.Type;
 export type resetPasswordSchema = typeof ResetPasswordResolver.Type;

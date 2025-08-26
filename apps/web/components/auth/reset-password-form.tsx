@@ -32,16 +32,27 @@ export const ResetPasswordForm = () => {
       password: "",
       confirmPassword: "",
     },
+    mode: "onChange",
   });
 
   const onSubmit = async (data: resetPasswordSchema) => {
+    if (form.getValues("password") !== form.getValues("confirmPassword")) {
+      form.setError("confirmPassword", { message: "Password does not match" });
+      return;
+    }
+
     const response = await resetPasswordAction(data);
-    console.log("response", response);
+
+    if (response.error) {
+      form.setError("root", { message: response.error });
+    }
   };
 
   const resetForm = () => {
     form.reset();
   };
+
+  console.log("form state", form.formState.errors);
 
   return (
     <CardWrapper

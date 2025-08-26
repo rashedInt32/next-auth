@@ -11,11 +11,12 @@ export async function POST(req: Request) {
 
   const updatePassword = Effect.gen(function* () {
     const response = yield* findResetToken(token);
-    if (!response?.token) {
-      return NextResponse.json({
-        status: 400,
-        message: "Invalid token or missing",
-      });
+    console.log("response", response);
+    if (!response?.token || response === null) {
+      return NextResponse.json(
+        { error: "Invalid or expired token" },
+        { status: 400 },
+      );
     }
 
     const crypto = yield* CryptoService;
