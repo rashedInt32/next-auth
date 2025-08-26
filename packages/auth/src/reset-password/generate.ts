@@ -1,4 +1,4 @@
-import { findUserByEmail, PrismaServiceLive } from "@repo/db";
+import { findUserByEmail, PrismaError, PrismaServiceLive } from "@repo/db";
 import { Effect, Layer } from "effect";
 import { UserError } from "../error";
 import { createPasswordResetToken, deletePasswordResetToken } from "@repo/db";
@@ -10,7 +10,10 @@ import { CryptoService, CryptoServiceLive } from "../service/jwt";
  * @param duration number in minute
  * @returns
  */
-export const generateResetPasswordToken = (email: string, duration?: number) =>
+export const generateResetPasswordToken = (
+  email: string,
+  duration?: number,
+): Effect.Effect<{ token: string }, UserError | PrismaError, never> =>
   Effect.gen(function* () {
     const existingUser = yield* findUserByEmail(email);
     if (!existingUser) {
@@ -35,11 +38,12 @@ export const generateResetPasswordToken = (email: string, duration?: number) =>
       `${RESET_TOKEN_MINUTE}m`,
     );
 
-    return yield* createPasswordResetToken({
+    yield* createPasswordResetToken({
       email: existingUser.email as string,
       token,
       expires: new Date(Date.now() + RESET_TOKEN_MINUTE * 60 * 1000),
     });
+    return { token };
   }).pipe(
     Effect.provide(
       Layer.merge(

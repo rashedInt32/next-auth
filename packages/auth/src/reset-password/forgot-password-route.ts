@@ -21,10 +21,12 @@ export async function POST(req: Request) {
       "Reset your password",
     );
 
-    return NextResponse.json({
-      status: 201,
-      message: "Password reset email sent successfully",
-    });
+    return yield* Effect.succeed(
+      NextResponse.json({
+        status: 201,
+        message: "Password reset email sent successfully",
+      }),
+    );
   }).pipe(
     Effect.provide(EmailServiceLive),
     Effect.catchTag("UserError", (err) =>

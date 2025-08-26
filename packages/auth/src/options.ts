@@ -20,7 +20,7 @@ export const authOptions: NextAuthConfig = {
       authorize: async (credentials) => {
         const email = credentials?.email as string | undefined;
         const password = credentials?.password as string | undefined;
-        if (email || password) {
+        if (!email || !password) {
           return null;
         }
 
@@ -28,11 +28,14 @@ export const authOptions: NextAuthConfig = {
           const user = yield* findUserByEmail(credentials.email as string);
           if (!user?.password) return null;
 
-          const isValie = yield* Effect.tryPromise(() =>
-            bcrypt.compare(credentials.password! as string, user?.password!),
-          );
+          const isValid = yield* Effect.tryPromise({
+            try: () =>
+              bcrypt.compare(credentials.password! as string, user?.password!),
+            catch: (err) =>
+              new Error("Failed to compare password: " + String(err)),
+          });
 
-          if (!isValie) return null;
+          if (!isValid) return null;
 
           return {
             id: user.id,
