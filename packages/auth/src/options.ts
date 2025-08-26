@@ -8,7 +8,6 @@ import { findUserByEmail, PrismaServiceLive } from "@repo/db";
 
 const prisma = new PrismaClient();
 
-// Define a proper user type that matches your database schema
 interface DatabaseUser {
   id: string;
   email: string | null;
@@ -40,7 +39,10 @@ export const authOptions: NextAuthConfig = {
         }
 
         const credentialsEffect = Effect.gen(function* () {
-          const user: DatabaseUser | null = yield* findUserByEmail(email);
+          const userResult: unknown = yield* findUserByEmail(email);
+
+          // Type assertion for DatabaseUser
+          const user = userResult as DatabaseUser | null;
 
           if (!user?.password) return null;
 
