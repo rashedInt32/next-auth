@@ -5,7 +5,7 @@ import { createPasswordResetToken, deletePasswordResetToken } from "@repo/db";
 import { CryptoService, CryptoServiceLive } from "../service/jwt";
 
 // Define proper user type
-interface User {
+interface DatabaseUser {
   id: string;
   email: string | null;
   name?: string | null;
@@ -17,7 +17,8 @@ export const generateResetPasswordToken = (
   duration?: number,
 ): Effect.Effect<{ token: string }, UserError | PrismaError, never> =>
   Effect.gen(function* () {
-    const existingUser: User | null = yield* findUserByEmail(email);
+    const existingUser: DatabaseUser | null = yield* findUserByEmail(email);
+
     if (!existingUser || !existingUser.email) {
       return yield* Effect.fail(
         new UserError({
@@ -45,6 +46,7 @@ export const generateResetPasswordToken = (
       token,
       expires: new Date(Date.now() + RESET_TOKEN_MINUTE * 60 * 1000),
     });
+
     return { token };
   }).pipe(
     Effect.provide(

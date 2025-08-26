@@ -3,24 +3,26 @@ import { Effect, Layer } from "effect";
 import { findResetToken, PrismaServiceLive } from "@repo/db";
 import { CryptoService, CryptoServiceLive } from "../service/jwt";
 
-// Define request body type
-interface ResetPasswordRequest {
+// Define response type from findResetToken
+interface ResetTokenResponse {
+  id?: string;
   token?: string;
-  password?: string;
-  confirmPassword?: string;
+  email?: string;
+  expires?: Date;
+  // Add other properties that findResetToken returns
 }
 
 export async function POST(req: Request) {
-  const { token, password, confirmPassword }: ResetPasswordRequest =
-    await req.json();
+  const { token, password, confirmPassword } = await req.json();
 
   if (!token) {
     return NextResponse.json({ status: 400, message: "Token is missing" });
   }
 
   const updatePassword = Effect.gen(function* () {
-    const response = yield* findResetToken(token);
-    if (!response?.token || response === null) {
+    const response: ResetTokenResponse | null = yield* findResetToken(token);
+
+    if (!response?.token) {
       return yield* Effect.succeed(
         NextResponse.json(
           { error: "We couldn't find the token, please try again" },
