@@ -1,4 +1,4 @@
-import type { NextAuthConfig } from "next-auth";
+import type { NextAuthConfig, User } from "next-auth";
 import bcrypt from "bcryptjs";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
@@ -7,6 +7,11 @@ import { Effect, Exit } from "effect";
 import { findUserByEmail, PrismaServiceLive } from "@repo/db";
 
 const prisma = new PrismaClient();
+
+type CredentialsType = {
+  email?: unknown;
+  password?: unknown;
+};
 
 export const authOptions: NextAuthConfig = {
   adapter: PrismaAdapter(prisma),
@@ -17,9 +22,9 @@ export const authOptions: NextAuthConfig = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      authorize: async (credentials) => {
-        const email = credentials?.email as string | undefined;
-        const password = credentials?.password as string | undefined;
+      authorize: async (credentials: CredentialsType) => {
+        const email = credentials?.email;
+        const password = credentials?.password;
         if (!email || !password) {
           return null;
         }
@@ -41,7 +46,7 @@ export const authOptions: NextAuthConfig = {
             id: user.id,
             email: user.email,
             name: user.name,
-          };
+          } satisfies User;
         }).pipe(Effect.provide(PrismaServiceLive));
 
         const exit = await Effect.runPromiseExit(credentialsEffect);

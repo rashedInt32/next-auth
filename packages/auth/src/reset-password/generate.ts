@@ -4,6 +4,13 @@ import { UserError } from "../error";
 import { createPasswordResetToken, deletePasswordResetToken } from "@repo/db";
 import { CryptoService, CryptoServiceLive } from "../service/jwt";
 
+type User = {
+  id: string;
+  email: string;
+  name?: string | null;
+  password?: string;
+};
+
 /**
  *
  * @param email string
@@ -15,7 +22,7 @@ export const generateResetPasswordToken = (
   duration?: number,
 ): Effect.Effect<{ token: string }, UserError | PrismaError, never> =>
   Effect.gen(function* () {
-    const existingUser = yield* findUserByEmail(email);
+    const existingUser: User | null = yield* findUserByEmail(email);
     if (!existingUser) {
       return yield* Effect.fail(
         new UserError({
