@@ -1,8 +1,9 @@
 import type { NextAuthConfig, User } from "next-auth";
 import bcrypt from "bcryptjs";
 import Credentials from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import { Effect, Exit } from "effect";
-import { findUserByEmail, PrismaServiceLive } from "@repo/db";
+import { findUserByEmail, PrismaServiceLive, prisma } from "@repo/db";
 
 interface DatabaseUser {
   id: string;
@@ -11,15 +12,11 @@ interface DatabaseUser {
   password: string | null;
 }
 
-// Use a function to get the Prisma adapter to avoid top-level Prisma client initialization
+// Use the shared prisma instance from @repo/db with PrismaAdapter
 const getPrismaAdapter = () => {
   if (typeof window !== "undefined") {
     return undefined;
   }
-
-  const { PrismaClient } = require("@prisma/client");
-  const { PrismaAdapter } = require("@auth/prisma-adapter");
-  const prisma = new PrismaClient();
   return PrismaAdapter(prisma);
 };
 
@@ -49,7 +46,6 @@ export const authOptions: NextAuthConfig = {
         const credentialsEffect = Effect.gen(function* () {
           const userResult: unknown = yield* findUserByEmail(email);
 
-          // Type assertion for DatabaseUser
           const user = userResult as DatabaseUser | null;
 
           if (!user?.password) return null;
