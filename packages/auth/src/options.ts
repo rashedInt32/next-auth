@@ -8,11 +8,6 @@ import { findUserByEmail, PrismaServiceLive } from "@repo/db";
 
 const prisma = new PrismaClient();
 
-type CredentialsType = {
-  email?: unknown;
-  password?: unknown;
-};
-
 export const authOptions: NextAuthConfig = {
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -22,20 +17,26 @@ export const authOptions: NextAuthConfig = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      authorize: async (credentials: CredentialsType) => {
-        const email = credentials?.email;
-        const password = credentials?.password;
+      authorize: async (credentials) => {
+        const email =
+          typeof credentials?.email === "string"
+            ? credentials.email
+            : undefined;
+        const password =
+          typeof credentials?.password === "string"
+            ? credentials.password
+            : undefined;
+
         if (!email || !password) {
           return null;
         }
 
         const credentialsEffect = Effect.gen(function* () {
-          const user = yield* findUserByEmail(credentials.email as string);
+          const user = yield* findUserByEmail(email);
           if (!user?.password) return null;
 
           const isValid = yield* Effect.tryPromise({
-            try: () =>
-              bcrypt.compare(credentials.password! as string, user?.password!),
+            try: () => bcrypt.compare(password, user.password!),
             catch: (err) =>
               new Error("Failed to compare password: " + String(err)),
           });
@@ -74,5 +75,5 @@ export const authOptions: NextAuthConfig = {
       return token;
     },
   },
-  debug: true, // Enable debug logs for next-auth
+  debug: true,
 };

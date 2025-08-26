@@ -4,26 +4,21 @@ import { UserError } from "../error";
 import { createPasswordResetToken, deletePasswordResetToken } from "@repo/db";
 import { CryptoService, CryptoServiceLive } from "../service/jwt";
 
-type User = {
+// Define proper user type
+interface User {
   id: string;
-  email: string;
+  email: string | null;
   name?: string | null;
-  password?: string;
-};
+  password?: string | null;
+}
 
-/**
- *
- * @param email string
- * @param duration number in minute
- * @returns
- */
 export const generateResetPasswordToken = (
   email: string,
   duration?: number,
 ): Effect.Effect<{ token: string }, UserError | PrismaError, never> =>
   Effect.gen(function* () {
-    const existingUser = yield* findUserByEmail(email);
-    if (!existingUser) {
+    const existingUser: User | null = yield* findUserByEmail(email);
+    if (!existingUser || !existingUser.email) {
       return yield* Effect.fail(
         new UserError({
           code: "USER_NOT_FOUND",
@@ -32,7 +27,7 @@ export const generateResetPasswordToken = (
       );
     }
 
-    yield* deletePasswordResetToken({ email: existingUser.email as string });
+    yield* deletePasswordResetToken({ email: existingUser.email });
 
     const RESET_TOKEN_MINUTE = duration ?? 5;
 
@@ -46,7 +41,7 @@ export const generateResetPasswordToken = (
     );
 
     yield* createPasswordResetToken({
-      email: existingUser.email as string,
+      email: existingUser.email,
       token,
       expires: new Date(Date.now() + RESET_TOKEN_MINUTE * 60 * 1000),
     });
