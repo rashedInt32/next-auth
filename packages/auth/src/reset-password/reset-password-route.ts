@@ -19,7 +19,6 @@ export async function POST(req: Request) {
   const updatePassword = Effect.gen(function* () {
     const tokenResult: unknown = yield* findResetToken(token);
 
-    // Type assertion for ResetTokenResponse
     const response = tokenResult as ResetTokenResponse | null;
 
     if (!response?.token) {
@@ -33,6 +32,9 @@ export async function POST(req: Request) {
 
     const crypto = yield* CryptoService;
     const verifyToken = yield* crypto.verifyJwt(response.token);
+    console.log("verifytoken", verifyToken);
+    if (verifyToken?.email) {
+    }
 
     return yield* Effect.succeed(
       NextResponse.json({

@@ -18,7 +18,6 @@ export const generateResetPasswordToken = (
   Effect.gen(function* () {
     const userResult: unknown = yield* findUserByEmail(email);
 
-    // Type assertion for DatabaseUser
     const existingUser = userResult as DatabaseUser | null;
 
     if (!existingUser || !existingUser.email) {
