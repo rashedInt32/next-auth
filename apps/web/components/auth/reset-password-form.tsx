@@ -20,6 +20,7 @@ import {
 } from "@/schema/authSchema";
 import { Loader2 } from "lucide-react";
 import { resetPasswordAction } from "@/app/auth/action";
+import { FormSuccess } from "./form-success";
 
 export const ResetPasswordForm = () => {
   const searchParam = useSearchParams();
@@ -44,6 +45,7 @@ export const ResetPasswordForm = () => {
     if (response.error) {
       return form.setError("root", { message: response.error });
     }
+    return form.setError("root.success", { message: response.message });
   };
 
   return (
@@ -85,6 +87,7 @@ export const ResetPasswordForm = () => {
           />
 
           <FormError message={form.formState?.errors?.root?.message} />
+          <FormSuccess message={form.formState.errors.root?.success?.message} />
 
           <Button
             type="submit"

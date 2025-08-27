@@ -1,5 +1,5 @@
 import { Effect } from "effect";
-import { PrismaService, prismaOp } from "./prisma-service";
+import { PrismaError, PrismaService, prismaOp } from "./prisma-service";
 
 /**
  * Find user by email
@@ -68,5 +68,21 @@ export const findResetToken = (token: string) =>
     const prisma = yield* PrismaService;
     return yield* prismaOp(prisma.passwordResetToken.findUnique)({
       where: { token },
+    });
+  });
+
+/** Update password
+ *
+ */
+export const updatePassword = (email: string, password: string) =>
+  Effect.gen(function* () {
+    const prisma = yield* PrismaService;
+    return yield* prismaOp(prisma.user.update)({
+      where: {
+        email: email,
+      },
+      data: {
+        password: password,
+      },
     });
   });

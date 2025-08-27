@@ -16,4 +16,5 @@ export {
   createPasswordResetToken,
   deletePasswordResetToken,
   findResetToken,
+  updatePassword,
 } from "./query";

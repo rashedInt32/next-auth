@@ -1,6 +1,7 @@
+import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { Effect, Layer } from "effect";
-import { findResetToken, PrismaServiceLive } from "@repo/db";
+import { findResetToken, PrismaServiceLive, updatePassword } from "@repo/db";
 import { CryptoService, CryptoServiceLive } from "../service/jwt";
 
 interface ResetTokenResponse {
@@ -13,10 +14,24 @@ export async function POST(req: Request) {
   const { token, password, confirmPassword } = await req.json();
 
   if (!token) {
-    return NextResponse.json({ status: 400, message: "Token is missing" });
+    return NextResponse.json({ error: "Missing token" }, { status: 400 });
+  }
+  if (password !== confirmPassword) {
+    return NextResponse.json(
+      { error: "Password don't match, please try again" },
+      { status: 400 },
+    );
   }
 
-  const updatePassword = Effect.gen(function* () {
+  const secret = process.env.NEXT_PUBLIC_CRYPTO_SECRET;
+  if (!secret) {
+    return NextResponse.json(
+      { error: "Server misconfiguration" },
+      { status: 500 },
+    );
+  }
+
+  const update = Effect.gen(function* () {
     const tokenResult: unknown = yield* findResetToken(token);
 
     const response = tokenResult as ResetTokenResponse | null;
@@ -32,8 +47,11 @@ export async function POST(req: Request) {
 
     const crypto = yield* CryptoService;
     const verifyToken = yield* crypto.verifyJwt(response.token);
-    console.log("verifytoken", verifyToken);
     if (verifyToken?.email) {
+      const passwordHash = yield* Effect.promise(() =>
+        bcrypt.hash(password, 10),
+      );
+      yield* updatePassword(verifyToken?.email as string, passwordHash);
     }
 
     return yield* Effect.succeed(
@@ -43,13 +61,8 @@ export async function POST(req: Request) {
       }),
     );
   }).pipe(
-    Effect.provide(
-      Layer.merge(
-        CryptoServiceLive(process.env.NEXT_PUBLIC_CRYPTO_SECRET!),
-        PrismaServiceLive,
-      ),
-    ),
-    Effect.catchTag("JwtVerifyError", (err) => {
+    Effect.provide(Layer.merge(CryptoServiceLive(secret), PrismaServiceLive)),
+    Effect.catchTag("JwtVerifyError", () => {
       return Effect.succeed(
         NextResponse.json(
           {
@@ -69,5 +82,5 @@ export async function POST(req: Request) {
     ),
   );
 
-  return Effect.runPromise(updatePassword);
+  return Effect.runPromise(update);
 }
