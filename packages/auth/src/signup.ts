@@ -1,7 +1,11 @@
 import bcrypt from "bcryptjs";
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import { PrismaServiceLive, findUserByEmail, createUser } from "@repo/db";
 import { UserError } from "./error";
+import { EmailService, EmailServiceLive } from "./service/email";
+import { confirmEmailBody } from "./reset-password/emailBody";
+import { CryptoService, CryptoServiceLive } from "./service/jwt";
+import { createEmailConfirmationToken } from "@repo/db";
 
 export const registerUser = ({
   email,
@@ -22,6 +26,37 @@ export const registerUser = ({
     }
 
     const passwordHash = yield* Effect.promise(() => bcrypt.hash(password, 10));
-
     return yield* createUser({ email, password: passwordHash });
   }).pipe(Effect.provide(PrismaServiceLive));
+
+export const generateEmailConfirmationToken = (email: string, id: string) =>
+  Effect.gen(function* () {
+    const cryptoService = yield* CryptoService;
+    const token = yield* cryptoService.signJwt(
+      {
+        email: email,
+        id: id,
+      },
+      "5m",
+    );
+    return yield* createEmailConfirmationToken({
+      email: email as string,
+      token,
+      expires: new Date(Date.now() + 5 * 60 * 1000),
+    });
+  }).pipe(
+    Effect.provide(
+      Layer.merge(
+        CryptoServiceLive(process.env.NEXT_PUBLIC_CRYPTO_SECRET!),
+        PrismaServiceLive,
+      ),
+    ),
+  );
+
+export const sendConfimationEmail = (token: string, email: string) =>
+  Effect.gen(function* () {
+    const emailService = yield* EmailService;
+    const confirmUrl = `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/auth/confirm-email?token=${token}`;
+
+    return yield* emailService.sendEmail(email, confirmEmailBody(confirmUrl));
+  }).pipe(Effect.provide(EmailServiceLive));
