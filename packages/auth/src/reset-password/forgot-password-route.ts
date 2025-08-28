@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { generateResetPasswordToken } from "./generate";
 import { Effect } from "effect";
 import { EmailService, EmailServiceLive } from "../service/email";
-import { emailBody } from "./emailBody";
+import { resetEmailBody } from "./emailBody";
 
 export async function POST(req: Request) {
   const { email } = await req.json();
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     const emailService = yield* EmailService;
     yield* emailService.sendEmail(
       email,
-      emailBody(resetUrl),
+      resetEmailBody(resetUrl),
       "Reset your password",
     );
 
