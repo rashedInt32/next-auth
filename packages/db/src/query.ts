@@ -86,3 +86,29 @@ export const updatePassword = (email: string, password: string) =>
       },
     });
   });
+
+/** Create a email confirmation token
+ * @param data - token data
+ * @returns created token
+ */
+export const createEmailConfirmationToken = (data: {
+  email: string;
+  token: string;
+  expires: Date;
+}) =>
+  Effect.gen(function* () {
+    const prisma = yield* PrismaService;
+    return yield* prismaOp(prisma.verificationToken.create)({ data });
+  });
+
+/** delte email confirmation token
+ * @param email - token data
+ * @returns created token
+ */
+export const deleteEmailConfirmationToken = (data: { email: string }) =>
+  Effect.gen(function* () {
+    const prisma = yield* PrismaService;
+    return yield* prismaOp(prisma.verificationToken.deleteMany)({
+      where: { email: data.email },
+    });
+  });
