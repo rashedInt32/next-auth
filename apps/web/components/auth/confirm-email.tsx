@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Mail, CheckCircle, Loader2 } from "lucide-react";
 import { CardWrapper } from "@/components/auth/card-wrapper";
@@ -60,5 +60,3 @@ export const ConfirmEmail = () => {
     </CardWrapper>
   );
 };
-
-export default EmailVerificationForm;
