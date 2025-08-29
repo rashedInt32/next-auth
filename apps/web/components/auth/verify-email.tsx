@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Mail, CheckCircle, Loader2 } from "lucide-react";
 import { CardWrapper } from "@/components/auth/card-wrapper";
 import { FormSuccess } from "@/components/auth/form-success";
 import { FormError } from "@/components/auth/form-error";
+import { verifyEmailAction } from "@/app/auth/action";
 
 export const VerifyEmail = () => {
   const [error, setError] = useState("");
@@ -13,22 +14,22 @@ export const VerifyEmail = () => {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
-  // useEffect(() => {
-  //   const onSubmit = async () => {
-  //     if (!token) {
-  //       setError("Missing token.");
-  //       return;
-  //     }
-  //     const response = await verifyEmailAction(token);
-  //     if (response.success) {
-  //       setSuccess(response.success);
-  //     } else {
-  //       setError(response.error);
-  //     }
-  //   };
-  //
-  //   onSubmit();
-  // }, [token]);
+  useEffect(() => {
+    const onSubmit = async () => {
+      if (!token) {
+        setError("Missing token.");
+        return;
+      }
+      const response = await verifyEmailAction(token);
+      if (response.success) {
+        setSuccess(response.message);
+      } else {
+        setError(response.error);
+      }
+    };
+
+    onSubmit();
+  }, [token]);
 
   return (
     <CardWrapper

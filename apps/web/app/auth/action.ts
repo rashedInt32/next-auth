@@ -86,6 +86,7 @@ export const verifyEmailAction = async (token: string) => {
   );
 
   const result = await response.json();
+  console.log("result", result);
   if (result.error) {
     return { error: result.error || "Failed to verify email" };
   }

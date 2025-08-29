@@ -27,19 +27,27 @@ export async function GET(req: Request) {
     yield* crypto.verifyJwt(getTokenFromDB.token);
 
     return yield* Effect.succeed(
-      NextResponse.json({ success: true, message: "Email verify Successful" }),
+      NextResponse.json({
+        success: true,
+        message: "Email successfully varified",
+      }),
     );
   }).pipe(
     Effect.provide(Layer.merge(PrismaServiceLive, CryptoServiceLive(secret))),
-    Effect.catchTag("JwtVerifyError", (err) => {
-      return Effect.fail(
-        NextResponse.json({ error: err.cause }, { status: 500 }),
+    Effect.catchTag("JwtVerifyError", () => {
+      return Effect.succeed(
+        NextResponse.json(
+          {
+            error: `Token expired, please request a new link.`,
+          },
+          { status: 500 },
+        ),
       );
     }),
-    Effect.catchAll((err) =>
+    Effect.catchAll(() =>
       Effect.fail(
         NextResponse.json(
-          { error: `Email verification failed, please try again, ${err}` },
+          { error: `Email verification failed, please try again` },
           { status: 500 },
         ),
       ),
