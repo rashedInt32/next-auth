@@ -58,5 +58,9 @@ export const sendConfimationEmail = (token: string, email: string) =>
     const emailService = yield* EmailService;
     const confirmUrl = `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/auth/confirm-email?token=${token}`;
 
-    return yield* emailService.sendEmail(email, confirmEmailBody(confirmUrl));
+    return yield* emailService.sendEmail(
+      email,
+      confirmEmailBody(confirmUrl),
+      "Confirm your email",
+    );
   }).pipe(Effect.provide(EmailServiceLive));
