@@ -1,7 +1,12 @@
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { Effect, Layer } from "effect";
-import { findResetToken, PrismaServiceLive, updatePassword } from "@repo/db";
+import {
+  deletePasswordResetToken,
+  findResetToken,
+  PrismaServiceLive,
+  updatePassword,
+} from "@repo/db";
 import { CryptoService, CryptoServiceLive } from "../service/jwt";
 
 export interface ResetTokenResponse {
@@ -47,12 +52,10 @@ export async function POST(req: Request) {
 
     const crypto = yield* CryptoService;
     const verifyToken = yield* crypto.verifyJwt(response.token);
-    if (verifyToken?.email) {
-      const passwordHash = yield* Effect.promise(() =>
-        bcrypt.hash(password, 10),
-      );
-      yield* updatePassword(verifyToken?.email as string, passwordHash);
-    }
+
+    const passwordHash = yield* Effect.promise(() => bcrypt.hash(password, 10));
+    yield* updatePassword(verifyToken?.email as string, passwordHash);
+    yield* deletePasswordResetToken({ email: verifyToken?.email as string });
 
     return yield* Effect.succeed(
       NextResponse.json({
