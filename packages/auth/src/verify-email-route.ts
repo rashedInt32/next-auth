@@ -3,7 +3,7 @@ import { CryptoService, CryptoServiceLive } from "./service/jwt";
 import { Effect, Layer } from "effect";
 import { findEmailConfirmationToken, PrismaServiceLive } from "@repo/db";
 
-export async function POST(req: Request) {
+export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const token = searchParams.get("token");
   if (!token) {
