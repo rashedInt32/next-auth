@@ -19,4 +19,5 @@ export {
   updatePassword,
   createEmailConfirmationToken,
   deleteEmailConfirmationToken,
+  findEmailConfirmationToken,
 } from "./query";

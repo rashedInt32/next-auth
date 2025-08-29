@@ -112,3 +112,16 @@ export const deleteEmailConfirmationToken = (data: { email: string }) =>
       where: { email: data.email },
     });
   });
+
+/**
+ *
+ * @param token - token string
+ * @returns token or null
+ */
+export const findEmailConfirmationToken = (token: string) =>
+  Effect.gen(function* () {
+    const prisma = yield* PrismaService;
+    return yield* prismaOp(prisma.verificationToken.findUnique)({
+      where: { token },
+    });
+  });
