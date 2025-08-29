@@ -46,7 +46,7 @@ export const RegisterFrom = () => {
     >
       {success ? (
         <>
-          <Mail className="w-12 h-12 text-green-500" />
+          <Mail className="mx-auto w-12 h-12 text-green-500 mb-6" />
           <FormSuccess message="Registration successful! Please check your email to verify your account." />
         </>
       ) : (
