@@ -63,7 +63,7 @@ export const generateEmailConfirmationToken = (email: string, id: string) =>
 export const sendConfimationEmail = (token: string, email: string) =>
   Effect.gen(function* () {
     const emailService = yield* EmailService;
-    const confirmUrl = `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/auth/confirm-email?token=${token}`;
+    const confirmUrl = `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/auth/verify-email?token=${token}`;
 
     return yield* emailService.sendEmail(
       email,
