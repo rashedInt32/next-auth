@@ -46,7 +46,7 @@ export async function POST(req: Request) {
     Effect.catchTag("UserError", (err) =>
       Effect.succeed(
         NextResponse.json(
-          { error: err.message },
+          { error: err.message, code: err.code },
           { status: err.code === "EMAIL_EXISTS" ? 409 : 500 },
         ),
       ),

@@ -51,6 +51,13 @@ export const generateEmailConfirmationToken = (email: string, id: string) =>
         PrismaServiceLive,
       ),
     ),
+    Effect.mapError(
+      (err) =>
+        new UserError({
+          code: "EMAIL_CONFIRMATION_TOKEN_FAILED",
+          message: err.message,
+        }),
+    ),
   );
 
 export const sendConfimationEmail = (token: string, email: string) =>
