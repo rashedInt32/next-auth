@@ -125,3 +125,17 @@ export const findEmailConfirmationToken = (token: string) =>
       where: { token },
     });
   });
+
+/** Update password
+ *
+ */
+export const updateUserFields = (email: string, data: Record<string, any>) =>
+  Effect.gen(function* () {
+    const prisma = yield* PrismaService;
+    return yield* prismaOp(prisma.user.update)({
+      where: {
+        email: email,
+      },
+      data: data,
+    });
+  });

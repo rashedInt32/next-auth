@@ -17,6 +17,7 @@ export {
   deletePasswordResetToken,
   findResetToken,
   updatePassword,
+  updateUserFields,
   createEmailConfirmationToken,
   deleteEmailConfirmationToken,
   findEmailConfirmationToken,

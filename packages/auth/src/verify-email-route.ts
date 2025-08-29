@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 import { CryptoService, CryptoServiceLive } from "./service/jwt";
 import { Effect, Layer } from "effect";
-import { findEmailConfirmationToken, PrismaServiceLive } from "@repo/db";
+import {
+  deleteEmailConfirmationToken,
+  findEmailConfirmationToken,
+  PrismaServiceLive,
+  updateUserFields,
+} from "@repo/db";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -25,6 +30,12 @@ export async function GET(req: Request) {
     }
 
     yield* crypto.verifyJwt(getTokenFromDB.token);
+
+    yield* updateUserFields(getTokenFromDB.email, {
+      emailVerified: new Date(),
+    });
+
+    yield* deleteEmailConfirmationToken({ email: getTokenFromDB.email });
 
     return yield* Effect.succeed(
       NextResponse.json({
