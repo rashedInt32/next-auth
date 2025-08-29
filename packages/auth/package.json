@@ -31,6 +31,10 @@
       "types": "./dist/reset-password/forgot-password-route.d.ts",
       "default": "./src/reset-password/forgot-password-route.ts"
     },
+    "./verify-email-route": {
+      "types": "./dist/verify-email-route.d.ts",
+      "default": "./src/verify-email-route.ts"
+    },
     "./crypto-service": {
       "types": "./dist/service/jwt.d.ts",
       "default": "./src/service/jwt.ts"

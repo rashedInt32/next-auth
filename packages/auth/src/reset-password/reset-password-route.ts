@@ -4,7 +4,7 @@ import { Effect, Layer } from "effect";
 import { findResetToken, PrismaServiceLive, updatePassword } from "@repo/db";
 import { CryptoService, CryptoServiceLive } from "../service/jwt";
 
-interface ResetTokenResponse {
+export interface ResetTokenResponse {
   token?: string;
   email?: string;
   expires?: Date;
