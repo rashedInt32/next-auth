@@ -31,10 +31,12 @@ export const RegisterFrom = () => {
 
   const onSubmit = async (data: authSchema) => {
     const user = await createUserAction(data);
-    if (user?.success) {
-      setSuccess(true);
-      form.reset();
+
+    if (user?.error) {
+      return form.setError("root", { message: user.error });
     }
+    setSuccess(true);
+    form.reset();
   };
 
   return (
@@ -84,7 +86,7 @@ export const RegisterFrom = () => {
               )}
             />
 
-            <FormError message="" />
+            <FormError message={form.formState.errors?.root?.message} />
             <FormSuccess message="" />
             <Button
               type="submit"

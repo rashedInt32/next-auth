@@ -15,11 +15,15 @@ export interface EmailService {
 
 export const EmailService = Context.GenericTag<EmailService>("EmailService");
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export const EmailServiceLive = Layer.effect(
   EmailService,
   Effect.gen(function* () {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      throw new EmailSendError({ cause: "RESEND_API_KEY is missing" });
+    }
+    const resend = new Resend(apiKey);
+
     return EmailService.of({
       sendEmail: (to, body, subject) =>
         Effect.promise(() =>
