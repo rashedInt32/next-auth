@@ -1,6 +1,5 @@
 import { authSchema, resetPasswordSchema } from "@/schema/authSchema";
 import { fetchApi } from "@/utils/api";
-// add doc comments for the function
 
 /**
  *
@@ -10,12 +9,11 @@ import { fetchApi } from "@/utils/api";
 export const createUserAction = async (data: authSchema) => {
   const { email, password } = data;
 
-  const user = await fetchApi("/api/signup", {
+  const response = await fetchApi("/api/signup", {
     method: "POST",
     body: JSON.stringify({ email, password }),
   });
 
-  const response = await user.json();
   if (response.error) {
     return { error: response.error || "Failed to create user" };
   }
@@ -38,12 +36,11 @@ export const forgotPasswordAction = async (
     body: JSON.stringify({ email }),
   });
 
-  const response = await token.json();
-  if (response.error) {
-    return { error: response.error || "Failed to generate Token" };
+  if (token.error) {
+    return { error: token.error || "Failed to generate Token" };
   }
 
-  return { success: true, message: response.message };
+  return { success: true, message: token.message };
 };
 
 /**
@@ -52,12 +49,10 @@ export const forgotPasswordAction = async (
  * @returns an object with success status and message or error message
  */
 export const resetPasswordAction = async (data: resetPasswordSchema) => {
-  const response = await fetchApi("/api/reset-password", {
+  const result = await fetchApi("/api/reset-password", {
     method: "POST",
     body: JSON.stringify(data),
   });
-
-  const result = await response.json();
 
   if (result.error) {
     return { error: result.error || "Failed to reset password" };
@@ -75,10 +70,9 @@ export const verifyEmailAction = async (token: string) => {
     method: "GET",
   });
 
-  const result = await response.json();
-  if (result.error) {
-    return { error: result.error || "Failed to verify email" };
+  if (response.error) {
+    return { error: response.error || "Failed to verify email" };
   }
 
-  return { success: true, message: result.message };
+  return { success: true, message: response.message };
 };
