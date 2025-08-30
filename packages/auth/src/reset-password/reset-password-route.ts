@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const secret = process.env.NEXT_PUBLIC_CRYPTO_SECRET;
+  const secret = process.env.CRYPTO_SECRET;
   if (!secret) {
     return NextResponse.json(
       { error: "Server misconfiguration" },

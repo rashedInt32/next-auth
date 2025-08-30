@@ -52,7 +52,7 @@ export const generateResetPasswordToken = (
   }).pipe(
     Effect.provide(
       Layer.merge(
-        CryptoServiceLive(process.env.NEXT_PUBLIC_CRYPTO_SECRET!),
+        CryptoServiceLive(process.env.CRYPTO_SECRET!),
         PrismaServiceLive,
       ),
     ),

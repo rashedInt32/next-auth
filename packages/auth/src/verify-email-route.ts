@@ -15,7 +15,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Missing token" }, { status: 400 });
   }
 
-  const secret = process.env.NEXT_PUBLIC_CRYPTO_SECRET!;
+  const secret = process.env.CRYPTO_SECRET!;
 
   const verifyToken = Effect.gen(function* () {
     const crypto = yield* CryptoService;
