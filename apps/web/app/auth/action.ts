@@ -1,4 +1,5 @@
 import { authSchema, resetPasswordSchema } from "@/schema/authSchema";
+import { fetchApi } from "@/utils/api";
 // add doc comments for the function
 
 /**
@@ -9,11 +10,8 @@ import { authSchema, resetPasswordSchema } from "@/schema/authSchema";
 export const createUserAction = async (data: authSchema) => {
   const { email, password } = data;
 
-  const user = await fetch("http://localhost:3000/api/signup", {
+  const user = await fetchApi("/api/signup", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify({ email, password }),
   });
 
@@ -35,11 +33,8 @@ export const forgotPasswordAction = async (
 ) => {
   const { email } = data;
 
-  const token = await fetch("http://localhost:3000/api/forgot-password", {
+  const token = await fetchApi("/api/forgot-password", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify({ email }),
   });
 
@@ -57,13 +52,11 @@ export const forgotPasswordAction = async (
  * @returns an object with success status and message or error message
  */
 export const resetPasswordAction = async (data: resetPasswordSchema) => {
-  const response = await fetch("http://localhost:3000/api/reset-password", {
+  const response = await fetchApi("/api/reset-password", {
     method: "POST",
-    headers: {
-      "Content-type": "application/json",
-    },
     body: JSON.stringify(data),
   });
+
   const result = await response.json();
 
   if (result.error) {
@@ -78,12 +71,9 @@ export const resetPasswordAction = async (data: resetPasswordSchema) => {
  * @returns an object with success status and message or error message
  */
 export const verifyEmailAction = async (token: string) => {
-  const response = await fetch(
-    `http://localhost:3000/api/verify-email?token=${token}`,
-    {
-      method: "GET",
-    },
-  );
+  const response = await fetchApi(`/api/verify-email?token=${token}`, {
+    method: "GET",
+  });
 
   const result = await response.json();
   if (result.error) {

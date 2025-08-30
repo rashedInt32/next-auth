@@ -12,7 +12,7 @@ export async function POST(req: Request) {
 
   const createToken = Effect.gen(function* () {
     const { token } = yield* generateResetPasswordToken(email);
-    const resetUrl = `${process.env.BASE_URL || "http://localhost:3000"}/auth/reset-password?token=${token}`;
+    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/auth/reset-password?token=${token}`;
 
     const emailService = yield* EmailService;
     yield* emailService.sendEmail(
