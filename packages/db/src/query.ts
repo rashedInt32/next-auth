@@ -1,5 +1,5 @@
 import { Effect } from "effect";
-import { PrismaError, PrismaService, prismaOp } from "./prisma-service";
+import { PrismaService, prismaOp } from "./prisma-service";
 
 /**
  * Find user by email

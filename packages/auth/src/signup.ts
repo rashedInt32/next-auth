@@ -7,6 +7,9 @@ import { confirmEmailBody } from "./reset-password/emailBody";
 import { CryptoService, CryptoServiceLive } from "./service/jwt";
 import { createEmailConfirmationToken } from "@repo/db";
 
+const EXPIRES_IN = 5 * 60 * 1000; // 5 minutes
+const EXPIRES_IN_MINUTES = `${EXPIRES_IN / (60 * 1000)}m`;
+
 export const registerUser = ({
   email,
   password,
@@ -37,12 +40,13 @@ export const generateEmailConfirmationToken = (email: string, id: string) =>
         email: email,
         id: id,
       },
-      "5m",
+      EXPIRES_IN_MINUTES,
     );
+
     return yield* createEmailConfirmationToken({
       email: email as string,
       token,
-      expires: new Date(Date.now() + 5 * 60 * 1000),
+      expires: new Date(Date.now() + EXPIRES_IN),
     });
   }).pipe(
     Effect.provide(
